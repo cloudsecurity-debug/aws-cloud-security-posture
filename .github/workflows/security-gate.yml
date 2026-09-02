@@ -40,7 +40,7 @@ jobs:
 
       - name: Run Prowler multi-service assessment
         run: |
-          prowler aws --services iam,s3,lambda,eventbridge -f eu-north-1 || test $? -eq 3
+          prowler aws --services iam s3 awslambda eventbridge -f eu-north-1 || test $? -eq 3
           CSV_FILE="$(find output -maxdepth 1 -type f -name '*.csv' | sort | tail -n 1)"
           test -n "$CSV_FILE"
           echo "PROWLER_CSV=$CSV_FILE" >> "$GITHUB_ENV"
