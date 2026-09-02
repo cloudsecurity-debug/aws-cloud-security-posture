@@ -45,11 +45,15 @@ jobs:
           test -n "$CSV_FILE"
           echo "PROWLER_CSV=$CSV_FILE" >> "$GITHUB_ENV"
 
-      - name: Run CSPM security gate
+      - name: Normalize CSPM findings
         run: |
           test -n "$PROWLER_CSV"
-          echo "Evaluating: $PROWLER_CSV"
-          python3 scripts/security_gate.py "$PROWLER_CSV"
+          echo "Normalizing: $PROWLER_CSV"
+          python3 scripts/normalize_findings.py "$PROWLER_CSV"
+
+      - name: Evaluate CSPM risk
+        run: |
+          python3 scripts/risk_engine.py
 
       - name: Upload Prowler assessment artifacts
         if: always()
@@ -63,6 +67,6 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: cspm-security-gate-report
-          path: reports/security-gate-report.md
+          name: cspm-risk-decision-report
+          path: reports/risk-decision-report.md
           if-no-files-found: error

@@ -7,6 +7,7 @@ from pathlib import Path
 
 POLICY_PATH = Path("config/risk-policy.json")
 NORMALIZED_FINDINGS = Path("reports/normalized-findings.json")
+REPORT_PATH = Path("reports/risk-decision-report.md")
 
 
 def load_json(path):
@@ -123,6 +124,42 @@ def main():
     print(f"EXCEPTION:         {counts.get('EXCEPTION', 0)}")
     print(f"REPORT_ONLY:       {counts.get('REPORT_ONLY', 0)}")
 
+    REPORT_PATH.parent.mkdir(parents=True, exist_ok=True)
+
+    with REPORT_PATH.open("w", encoding="utf-8") as report:
+        report.write("# CSPM Risk Decision Report\n\n")
+        report.write(f"- Findings evaluated: {len(decisions)}\n")
+        report.write(f"- BLOCK: {counts.get('BLOCK', 0)}\n")
+        report.write(f"- INVESTIGATE: {counts.get('INVESTIGATE', 0)}\n")
+        report.write(f"- EXCEPTION: {counts.get('EXCEPTION', 0)}\n")
+        report.write(f"- REPORT_ONLY: {counts.get('REPORT_ONLY', 0)}\n")
+        report.write(
+            f"- Result: **{'BLOCK' if counts.get('BLOCK', 0) else 'PASS'}**\n\n"
+        )
+
+        report.write(
+            "| Score | Severity | Decision | Disposition | Owner | Finding | Resource |\n"
+        )
+        report.write(
+            "|---:|---|---|---|---|---|---|\n"
+        )
+
+        for decision in sorted(
+            decisions,
+            key=lambda item: item["risk_score"],
+            reverse=True,
+        ):
+            report.write(
+                f"| {decision['risk_score']} | "
+                f"{decision['severity'].upper()} | "
+                f"{decision['decision']} | "
+                f"{decision['disposition']} | "
+                f"{decision['owner']} | "
+                f"`{decision['finding_id']}` | "
+                f"`{decision['resource_uid']}` |\n"
+            )
+
+    print(f"\nReport: {REPORT_PATH}")
     print("\nRisk scores:")
 
     for decision in sorted(
@@ -138,7 +175,7 @@ def main():
             f"{decision['resource_uid']}"
         )
 
-    return 0
+    return 1 if counts.get("BLOCK", 0) > 0 else 0
 
 
 if __name__ == "__main__":
