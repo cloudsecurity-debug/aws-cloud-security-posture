@@ -1,3 +1,6 @@
 
 # Prowler generated output
 output/
+
+__pycache__/
+*.pyc
