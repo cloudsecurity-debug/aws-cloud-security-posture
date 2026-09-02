@@ -10,6 +10,10 @@ GOVERNANCE_REGISTER = Path(
     "reports/risk-register/iam-risk-register.csv"
 )
 
+CHECK_GOVERNANCE_REGISTER = Path(
+    "reports/risk-register/check-risk-register.csv"
+)
+
 
 def load_rows(path, delimiter):
     with path.open(
@@ -66,19 +70,21 @@ def build_governance_index(rows):
     return index
 
 
-def normalize_row(row, governance):
+def normalize_row(row, governance, check_governance):
     finding_id = normalize(row.get("CHECK_ID"))
     resource_uid = normalize(row.get("RESOURCE_UID"))
 
     key = governance_key(finding_id, resource_uid)
 
-    if key not in governance:
+    if key in governance:
+        decision = governance[key]
+    elif finding_id in check_governance:
+        decision = check_governance[finding_id]
+    else:
         raise ValueError(
             "No governance record for: "
             f"{finding_id} | {resource_uid}"
         )
-
-    decision = governance[key]
 
     return {
         "finding_id": finding_id,
@@ -152,6 +158,13 @@ def main():
         )
         return 2
 
+    if not CHECK_GOVERNANCE_REGISTER.exists():
+        print(
+            "ERROR: check governance register not found: "
+            f"{CHECK_GOVERNANCE_REGISTER}"
+        )
+        return 2
+
     prowler_rows = load_rows(source, ";")
     governance_rows = load_rows(
         GOVERNANCE_REGISTER,
@@ -161,6 +174,29 @@ def main():
     governance = build_governance_index(
         governance_rows
     )
+
+    check_governance_rows = load_rows(
+        CHECK_GOVERNANCE_REGISTER,
+        ","
+    )
+
+    check_governance = {}
+
+    for row in check_governance_rows:
+        finding_id = normalize(row.get("finding_id"))
+
+        if not finding_id:
+            raise ValueError(
+                "Check governance record has empty finding_id"
+            )
+
+        if finding_id in check_governance:
+            raise ValueError(
+                "Duplicate check governance record: "
+                f"{finding_id}"
+            )
+
+        check_governance[finding_id] = row
 
     failed_rows = [
         row
@@ -176,7 +212,10 @@ def main():
         resource_uid = normalize(row.get("RESOURCE_UID"))
         key = governance_key(finding_id, resource_uid)
 
-        if key not in governance:
+        if (
+            key not in governance
+            and finding_id not in check_governance
+        ):
             missing_governance.append(key)
 
     if missing_governance:
@@ -186,7 +225,11 @@ def main():
         return 3
 
     findings = [
-        normalize_row(row, governance)
+        normalize_row(
+            row,
+            governance,
+            check_governance
+        )
         for row in failed_rows
     ]
 
@@ -212,8 +255,12 @@ def main():
         f"{len(findings)}"
     )
     print(
-        f"Governance records loaded: "
+        f"Resource governance records loaded: "
         f"{len(governance)}"
+    )
+    print(
+        f"Check governance records loaded: "
+        f"{len(check_governance)}"
     )
     print(
         f"Output: {DEFAULT_OUTPUT}"
