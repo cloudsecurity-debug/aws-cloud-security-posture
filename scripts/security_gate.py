@@ -57,16 +57,18 @@ def evaluate(finding, policy):
 
 def main():
     csv_path = Path(sys.argv[1]) if len(sys.argv) > 1 else DEFAULT_CSV
+    policy_path = Path(sys.argv[2]) if len(sys.argv) > 2 else POLICY_PATH
 
-    if not POLICY_PATH.exists():
-        print(f"ERROR: policy not found: {POLICY_PATH}")
+    if not policy_path.exists():
+        print(f"ERROR: policy not found: {policy_path}")
         return 2
 
     if not csv_path.exists():
         print(f"ERROR: findings file not found: {csv_path}")
         return 2
 
-    policy = load_policy()
+    with policy_path.open(encoding="utf-8") as f:
+        policy = json.load(f)
     findings = load_findings(csv_path)
 
     decisions = [
