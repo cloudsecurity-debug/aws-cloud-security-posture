@@ -22,9 +22,9 @@ This project builds a repeatable AWS IAM security assessment pipeline using Prow
 | Medium | INVESTIGATE |
 | Low | REPORT_ONLY |
 
-## Latest Assessment
+## Assessment Snapshot
 
-The latest local IAM assessment evaluated 16 failed findings:
+A local IAM assessment snapshot evaluated 16 failed findings:
 
 - 8 BLOCK
 - 2 INVESTIGATE
@@ -32,6 +32,8 @@ The latest local IAM assessment evaluated 16 failed findings:
 - 4 REPORT_ONLY
 
 Result: BLOCK
+
+Assessment counts can vary between runs as the AWS environment and Prowler results change. CI evaluates the findings produced by its own current assessment rather than relying on a previously generated report.
 
 The BLOCK result is intentional. The gate enforces policy rather than modifying administrator access simply to make the scan pass.
 
