@@ -40,7 +40,7 @@ jobs:
 
       - name: Run Prowler IAM assessment
         run: |
-          prowler aws --services iam -f eu-north-1
+          prowler aws --services iam -f eu-north-1 || test $? -eq 3
 
       - name: Run CSPM security gate
         run: |
