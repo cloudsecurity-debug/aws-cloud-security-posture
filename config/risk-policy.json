@@ -1,0 +1,71 @@
+{
+  "version": 1,
+  "name": "aws-cloud-security-posture-risk-policy",
+  "description": "Risk decision contract for normalized CSPM findings.",
+  "decision_model": {
+    "required_fields": [
+      "finding_id",
+      "resource_uid",
+      "severity",
+      "category",
+      "owner",
+      "disposition",
+      "status"
+    ],
+    "unknown_values": "must_not_be_invented"
+  },
+  "severity": {
+    "critical": {
+      "base_score": 40,
+      "default_action": "BLOCK"
+    },
+    "high": {
+      "base_score": 30,
+      "default_action": "BLOCK"
+    },
+    "medium": {
+      "base_score": 20,
+      "default_action": "INVESTIGATE"
+    },
+    "low": {
+      "base_score": 10,
+      "default_action": "REPORT_ONLY"
+    }
+  },
+  "dispositions": {
+    "AUTO_REMEDIATE": "remediation-approved",
+    "MANUAL_REMEDIATE": "human-approval-required",
+    "INVESTIGATE": "evidence-required",
+    "EXCEPTION": "risk-accepted-with-governance",
+    "REPORT_ONLY": "informational"
+  },
+  "lifecycle": {
+    "OPEN": "requires-action-or-review",
+    "IN_PROGRESS": "remediation-underway",
+    "VALIDATING": "remediation-awaiting-verification",
+    "CLOSED": "verified-or-finalized"
+  },
+  "risk_dimensions": {
+    "severity": "required",
+    "asset_criticality": "explicit-or-unknown",
+    "exposure": "explicit-or-unknown",
+    "business_impact": "explicit-or-unknown",
+    "exploitability": "explicit-or-unknown",
+    "remediation_status": "required",
+    "exception_status": "explicit-or-none"
+  },
+  "decision_rules": {
+    "BLOCK": "finding violates the enforced security policy",
+    "INVESTIGATE": "available evidence is insufficient for automatic remediation or acceptance",
+    "EXCEPTION": "risk is explicitly accepted under governance controls",
+    "REPORT_ONLY": "finding is retained for visibility without deployment-blocking impact",
+    "PASS": "no actionable failed finding remains after evaluation"
+  },
+  "fail_closed": {
+    "unknown_severity": "BLOCK",
+    "invalid_policy": "ERROR",
+    "missing_required_field": "ERROR",
+    "unrecognized_disposition": "ERROR",
+    "unrecognized_status": "ERROR"
+  }
+}
