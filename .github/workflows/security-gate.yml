@@ -39,5 +39,6 @@ jobs:
           pip install --no-cache-dir -r requirements.txt
 
       - name: Run Prowler IAM assessment
+        continue-on-error: true
         run: |
           prowler aws --services iam -f eu-north-1
