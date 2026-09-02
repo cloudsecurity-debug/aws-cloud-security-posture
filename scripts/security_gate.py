@@ -7,6 +7,7 @@ from pathlib import Path
 
 POLICY_PATH = Path("config/security-gate-policy.json")
 DEFAULT_CSV = Path("reports/post-remediation/iam-post-remediation.csv")
+REPORT_PATH = Path("reports/security-gate-report.md")
 
 
 def load_policy():
@@ -105,11 +106,45 @@ def main():
                 f"{item['reason']}"
             )
 
+    result = "BLOCK" if blocks else "PASS"
+
+    REPORT_PATH.parent.mkdir(parents=True, exist_ok=True)
+
+    with REPORT_PATH.open("w", encoding="utf-8") as report:
+        report.write("# CSPM Security Gate Report\n\n")
+        report.write(f"- Findings evaluated: {len(decisions)}\n")
+        report.write(f"- BLOCK: {len(blocks)}\n")
+        report.write(f"- INVESTIGATE: {len(investigates)}\n")
+        report.write(f"- EXCEPTION: {len(exceptions)}\n")
+        report.write(f"- REPORT_ONLY: {len(report_only)}\n")
+        report.write(f"- Result: **{result}**\n\n")
+
+        if blocks:
+            report.write("## Blocking Findings\n\n")
+            report.write("| Severity | Check ID | Resource |\n")
+            report.write("|---|---|---|\n")
+            for item in blocks:
+                report.write(
+                    f"| {item['severity'].upper()} | "
+                    f"{item['finding_id']} | "
+                    f"{item['resource_name']} |\n"
+                )
+
+        if exceptions:
+            report.write("\n## Accepted Exceptions\n\n")
+            for item in exceptions:
+                report.write(
+                    f"- `{item['finding_id']}` on "
+                    f"`{item['resource_name']}` — {item['reason']}\n"
+                )
+
     if blocks:
         print("\nRESULT: BLOCK")
+        print(f"Report: {REPORT_PATH}")
         return 1
 
     print("\nRESULT: PASS")
+    print(f"Report: {REPORT_PATH}")
     return 0
 
 
