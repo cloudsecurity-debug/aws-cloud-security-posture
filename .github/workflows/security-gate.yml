@@ -39,9 +39,15 @@ jobs:
           pip install --no-cache-dir -r requirements.txt
 
       - name: Run Prowler IAM assessment
-        continue-on-error: true
         run: |
           prowler aws --services iam -f eu-north-1
+
+      - name: Run CSPM security gate
+        run: |
+          CSV_FILE="$(find output -maxdepth 1 -type f -name '*.csv' | sort | tail -n 1)"
+          test -n "$CSV_FILE"
+          echo "Evaluating: $CSV_FILE"
+          python3 scripts/security_gate.py "$CSV_FILE"
 
       - name: Upload Prowler assessment artifacts
         if: always()
@@ -49,4 +55,12 @@ jobs:
         with:
           name: prowler-iam-assessment
           path: output/
+          if-no-files-found: error
+
+      - name: Upload security gate report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cspm-security-gate-report
+          path: reports/security-gate-report.md
           if-no-files-found: error
