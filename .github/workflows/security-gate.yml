@@ -41,13 +41,15 @@ jobs:
       - name: Run Prowler IAM assessment
         run: |
           prowler aws --services iam -f eu-north-1 || test $? -eq 3
+          CSV_FILE="$(find output -maxdepth 1 -type f -name '*.csv' | sort | tail -n 1)"
+          test -n "$CSV_FILE"
+          echo "PROWLER_CSV=$CSV_FILE" >> "$GITHUB_ENV"
 
       - name: Run CSPM security gate
         run: |
-          CSV_FILE="$(find output -maxdepth 1 -type f -name '*.csv' | sort | tail -n 1)"
-          test -n "$CSV_FILE"
-          echo "Evaluating: $CSV_FILE"
-          python3 scripts/security_gate.py "$CSV_FILE"
+          test -n "$PROWLER_CSV"
+          echo "Evaluating: $PROWLER_CSV"
+          python3 scripts/security_gate.py "$PROWLER_CSV"
 
       - name: Upload Prowler assessment artifacts
         if: always()
