@@ -58,6 +58,7 @@ def evaluate(finding, policy):
 def main():
     csv_path = Path(sys.argv[1]) if len(sys.argv) > 1 else DEFAULT_CSV
     policy_path = Path(sys.argv[2]) if len(sys.argv) > 2 else POLICY_PATH
+    report_path = Path(sys.argv[3]) if len(sys.argv) > 3 else REPORT_PATH
 
     if not policy_path.exists():
         print(f"ERROR: policy not found: {policy_path}")
@@ -110,9 +111,9 @@ def main():
 
     result = "BLOCK" if blocks else "PASS"
 
-    REPORT_PATH.parent.mkdir(parents=True, exist_ok=True)
+    report_path.parent.mkdir(parents=True, exist_ok=True)
 
-    with REPORT_PATH.open("w", encoding="utf-8") as report:
+    with report_path.open("w", encoding="utf-8") as report:
         report.write("# CSPM Security Gate Report\n\n")
         report.write(f"- Findings evaluated: {len(decisions)}\n")
         report.write(f"- BLOCK: {len(blocks)}\n")
@@ -142,7 +143,7 @@ def main():
 
     if blocks:
         print("\nRESULT: BLOCK")
-        print(f"Report: {REPORT_PATH}")
+        print(f"Report: {report_path}")
         return 1
 
     print("\nRESULT: PASS")

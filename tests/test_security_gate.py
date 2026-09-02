@@ -52,6 +52,7 @@ def run_gate(csv_path, policy_path, report_path):
         str(GATE),
         str(csv_path),
         str(policy_path),
+        str(report_path),
     ]
 
     result = subprocess.run(
