@@ -10,7 +10,8 @@
       "category",
       "owner",
       "disposition",
-      "status"
+      "status",
+      "lifecycle_status"
     ],
     "unknown_values": "must_not_be_invented"
   },

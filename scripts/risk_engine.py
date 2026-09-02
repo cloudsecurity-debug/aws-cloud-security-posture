@@ -6,7 +6,7 @@ import sys
 from pathlib import Path
 
 POLICY_PATH = Path("config/risk-policy.json")
-RISK_REGISTER = Path("reports/risk-register/iam-risk-register.csv")
+NORMALIZED_FINDINGS = Path("reports/normalized-findings.json")
 
 
 def load_json(path):
@@ -50,7 +50,7 @@ def evaluate(finding, policy):
 
     severity = normalize(finding["severity"]).lower()
     disposition = normalize(finding["disposition"]).upper()
-    status = normalize(finding["status"]).upper()
+    status = normalize(finding["lifecycle_status"]).upper()
 
     if severity not in policy["severity"]:
         raise ValueError(f"Unknown severity: {severity}")
@@ -94,12 +94,15 @@ def main():
         print(f"ERROR: policy not found: {POLICY_PATH}")
         return 2
 
-    if not RISK_REGISTER.exists():
-        print(f"ERROR: risk register not found: {RISK_REGISTER}")
+    if not NORMALIZED_FINDINGS.exists():
+        print(
+            f"ERROR: normalized findings not found: "
+            f"{NORMALIZED_FINDINGS}"
+        )
         return 2
 
     policy = load_json(POLICY_PATH)
-    findings = load_csv(RISK_REGISTER)
+    findings = load_json(NORMALIZED_FINDINGS)
 
     decisions = [
         evaluate(finding, policy)

@@ -1,0 +1,102 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Normalized CSPM Finding",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "finding_id",
+    "resource_uid",
+    "severity",
+    "service",
+    "category",
+    "risk",
+    "status",
+    "owner",
+    "disposition",
+    "lifecycle_status"
+  ],
+  "properties": {
+    "finding_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "resource_uid": {
+      "type": "string",
+      "minLength": 1
+    },
+    "severity": {
+      "type": "string",
+      "enum": [
+        "critical",
+        "high",
+        "medium",
+        "low",
+        "informational"
+      ]
+    },
+    "service": {
+      "type": "string",
+      "minLength": 1
+    },
+    "category": {
+      "type": "string",
+      "minLength": 1
+    },
+    "risk": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "FAIL",
+        "PASS",
+        "MUTED"
+      ]
+    },
+    "owner": {
+      "type": "string",
+      "minLength": 1
+    },
+    "disposition": {
+      "type": "string",
+      "enum": [
+        "AUTO_REMEDIATE",
+        "MANUAL_REMEDIATE",
+        "INVESTIGATE",
+        "EXCEPTION",
+        "REPORT_ONLY"
+      ]
+    },
+    "lifecycle_status": {
+      "type": "string",
+      "enum": [
+        "OPEN",
+        "IN_PROGRESS",
+        "VALIDATING",
+        "CLOSED"
+      ]
+    },
+    "check_title": {
+      "type": "string"
+    },
+    "resource_type": {
+      "type": "string"
+    },
+    "resource_name": {
+      "type": "string"
+    },
+    "status_extended": {
+      "type": "string"
+    },
+    "remediation": {
+      "type": "string"
+    },
+    "compliance": {
+      "type": "string"
+    },
+    "categories": {
+      "type": "string"
+    }
+  }
+}

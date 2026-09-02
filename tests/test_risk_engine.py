@@ -23,7 +23,8 @@ def finding(**overrides):
         "category": "identity-access",
         "owner": "IAM",
         "disposition": "MANUAL_REMEDIATE",
-        "status": "OPEN",
+        "lifecycle_status": "OPEN",
+        "status": "FAIL",
     }
     base.update(overrides)
     return base
@@ -114,7 +115,7 @@ def test_unknown_severity_fails_closed():
 def test_unknown_status_fails_closed():
     try:
         evaluate(
-            finding(status="UNKNOWN"),
+            finding(lifecycle_status="UNKNOWN"),
             load_policy(),
         )
     except ValueError as exc:
