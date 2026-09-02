@@ -169,6 +169,22 @@ def main():
         == "FAIL"
     ]
 
+    missing_governance = []
+
+    for row in failed_rows:
+        finding_id = normalize(row.get("CHECK_ID"))
+        resource_uid = normalize(row.get("RESOURCE_UID"))
+        key = governance_key(finding_id, resource_uid)
+
+        if key not in governance:
+            missing_governance.append(key)
+
+    if missing_governance:
+        print("ERROR: missing governance records:")
+        for finding_id, resource_uid in missing_governance:
+            print(f"- {finding_id} | {resource_uid}")
+        return 3
+
     findings = [
         normalize_row(row, governance)
         for row in failed_rows
