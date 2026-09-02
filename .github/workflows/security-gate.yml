@@ -42,3 +42,11 @@ jobs:
         continue-on-error: true
         run: |
           prowler aws --services iam -f eu-north-1
+
+      - name: Upload Prowler assessment artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: prowler-iam-assessment
+          path: output/
+          if-no-files-found: error
