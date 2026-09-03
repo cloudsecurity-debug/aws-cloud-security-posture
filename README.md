@@ -1,79 +1,52 @@
-# AWS Cloud Security Posture
+# AWS Cloud Security Posture Management (CSPM)
+
+> A policy-driven AWS CSPM pipeline that discovers cloud-security findings, enriches them with security context, calculates explainable risk, applies governance decisions, and enforces security policy through CI/CD.
 
 [![Cloud Security Gate](https://github.com/cloudsecurity-debug/aws-cloud-security-posture/actions/workflows/security-gate.yml/badge.svg)](https://github.com/cloudsecurity-debug/aws-cloud-security-posture/actions/workflows/security-gate.yml)
 
-A production-style AWS Cloud Security Posture Management (CSPM) pipeline that discovers cloud security findings, enriches them with security context, calculates explainable risk, applies governance decisions, and enforces security policy through CI/CD.
+## Why I Built This
 
-The project demonstrates a complete security control loop:
+Cloud security tools can produce hundreds of findings, but detection alone does not create a security program.
 
-**Discover → Normalize → Enrich → Risk Score → Govern → Gate → Verify → Preserve Evidence**
+This project demonstrates the engineering layer between **finding discovery and security enforcement**:
 
----
+**Discover → Normalize → Enrich → Risk-score → Prioritize → Govern → Verify → Evidence**
 
-## Why This Project Exists
-
-Cloud security scanners can produce hundreds of findings, but detection alone does not create a security program.
-
-Security teams need to answer:
-
-- Which findings are actually important?
-- Which resources are affected?
-- Who owns the risk?
-- What should block deployment?
-- Which findings require investigation?
-- Which risks are explicitly accepted?
-- Can the organization prove what happened?
-
-This project turns raw CSPM findings into **explainable, governed, CI-enforced security decisions**.
+The goal is to make cloud-security decisions **repeatable, explainable, auditable, and safe to enforce in CI/CD**.
 
 ---
 
 ## Architecture
 
 ```text
-                         AWS ACCOUNT
-                             │
-                             ▼
-                       ┌─────────────┐
-                       │   Prowler   │
-                       │    CSPM     │
-                       └──────┬──────┘
-                              │
-                              ▼
-                    ┌───────────────────┐
-                    │ Finding Normalizer│
-                    └─────────┬─────────┘
-                              │
-                              ▼
-                  ┌───────────────────────┐
-                  │ Security Context      │
-                  │ + Evidence Enrichment │
-                  └───────────┬───────────┘
-                              │
-                              ▼
-                    ┌─────────────────┐
-                    │ Explainable Risk│
-                    │     Engine      │
-                    └────────┬────────┘
-                             │
-                             ▼
-                    ┌─────────────────┐
-                    │ Governance      │
-                    │ Decision        │
-                    └────────┬────────┘
-                             │
-              ┌──────────────┼──────────────┐
-              ▼              ▼              ▼
-           BLOCK        INVESTIGATE      EXCEPTION
-              │              │              │
-              └──────────────┼──────────────┘
-                             ▼
-                    ┌─────────────────┐
-                    │ Security Gate   │
-                    └────────┬────────┘
-                             │
-                             ▼
-                    GitHub Actions CI/CD
-                             │
-                             ▼
-                    Evidence Artifacts
+AWS Account
+     │
+     ▼
+Prowler CSPM Assessment
+(IAM • S3 • Lambda • EventBridge)
+     │
+     ▼
+Finding Normalization
+     │
+     ▼
+Security Context
+(asset criticality • exposure • business impact • exploitability)
+     │
+     ▼
+Explainable Risk Engine
+     │
+     ▼
+Governance Decision
+ ┌──────────┬─────────────┬───────────┬─────────────┐
+ │  BLOCK   │ INVESTIGATE │ EXCEPTION │ REPORT_ONLY │
+ └──────────┴─────────────┴───────────┴─────────────┘
+     │
+     ▼
+Security Gate
+     │
+     ├── New BLOCK → CI FAIL
+     │
+     └── No New BLOCK → CI PASS
+     │
+     ▼
+Evidence + Verification
