@@ -76,6 +76,17 @@ def validate_decision(decision):
 
     action = decision["decision"]
 
+    if decision["disposition"] not in {
+        "AUTO_REMEDIATE",
+        "MANUAL_REMEDIATE",
+        "INVESTIGATE",
+        "EXCEPTION",
+        "REPORT_ONLY",
+    }:
+        raise ValueError(
+            f"Unknown disposition: {decision['disposition']}"
+        )
+
     if action not in VALID_DECISIONS:
         raise ValueError(f"Unknown risk decision: {action}")
 
