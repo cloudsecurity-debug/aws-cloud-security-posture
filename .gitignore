@@ -4,3 +4,6 @@ output/
 
 __pycache__/
 *.pyc
+
+# Test cache
+.pytest_cache/
