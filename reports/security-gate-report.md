@@ -2,24 +2,26 @@
 
 - Decisions evaluated: 16
 - BLOCK: 9
+- Pre-existing BLOCK: 9
+- New BLOCK: 0
 - INVESTIGATE: 1
 - EXCEPTION: 2
 - REPORT_ONLY: 4
-- Result: **BLOCK**
+- Enforcement: **new BLOCK findings only**
+- Result: **PASS**
 
-## Blocking Decisions
 
-| Severity | Finding | Resource | Disposition | Owner |
-|---|---|---|---|---|
-| HIGH | `iam_administrator_access_with_mfa` | `arn:aws:iam::010603499647:group/cloud-security-admins1` | MANUAL_REMEDIATE | IAM |
-| HIGH | `iam_avoid_root_usage` | `arn:aws:iam::010603499647:root` | MANUAL_REMEDIATE | ACCOUNT_SECURITY |
-| CRITICAL | `iam_aws_attached_policy_no_administrative_privileges` | `arn:aws:iam::aws:policy/AdministratorAccess` | MANUAL_REMEDIATE | IAM |
-| HIGH | `iam_group_administrator_access_policy` | `arn:aws:iam::010603499647:group/cloud-security-admins1` | MANUAL_REMEDIATE | IAM |
-| CRITICAL | `iam_root_hardware_mfa_enabled` | `arn:aws:iam::010603499647:mfa` | MANUAL_REMEDIATE | ACCOUNT_SECURITY |
-| MEDIUM | `iam_user_access_not_stale_to_bedrock` | `arn:aws:iam::010603499647:user/cloud-security-admin` | INVESTIGATE | IAM |
-| HIGH | `iam_user_hardware_mfa_enabled` | `arn:aws:iam::010603499647:user/cloud-security-admin` | MANUAL_REMEDIATE | IAM |
-| HIGH | `iam_user_mfa_enabled_console_access` | `arn:aws:iam::010603499647:user/cloud-security-admin` | MANUAL_REMEDIATE | IAM |
-| HIGH | `iam_user_with_temporary_credentials` | `arn:aws:iam::010603499647:user/cloud-security-admin` | MANUAL_REMEDIATE | IAM |
+## Pre-existing Baseline Findings
+
+- `iam_administrator_access_with_mfa` on `arn:aws:iam::010603499647:group/cloud-security-admins1`
+- `iam_avoid_root_usage` on `arn:aws:iam::010603499647:root`
+- `iam_aws_attached_policy_no_administrative_privileges` on `arn:aws:iam::aws:policy/AdministratorAccess`
+- `iam_group_administrator_access_policy` on `arn:aws:iam::010603499647:group/cloud-security-admins1`
+- `iam_root_hardware_mfa_enabled` on `arn:aws:iam::010603499647:mfa`
+- `iam_user_access_not_stale_to_bedrock` on `arn:aws:iam::010603499647:user/cloud-security-admin`
+- `iam_user_hardware_mfa_enabled` on `arn:aws:iam::010603499647:user/cloud-security-admin`
+- `iam_user_mfa_enabled_console_access` on `arn:aws:iam::010603499647:user/cloud-security-admin`
+- `iam_user_with_temporary_credentials` on `arn:aws:iam::010603499647:user/cloud-security-admin`
 
 ## Investigation Required
 

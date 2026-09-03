@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "description": "Approved baseline of pre-existing CSPM findings. New BLOCK findings outside this baseline fail CI.",
+  "enforcement": "new_block_findings_only",
+  "findings": [
+    "iam_administrator_access_with_mfa|arn:aws:iam::010603499647:group/cloud-security-admins1",
+    "iam_avoid_root_usage|arn:aws:iam::010603499647:root",
+    "iam_aws_attached_policy_no_administrative_privileges|arn:aws:iam::aws:policy/AdministratorAccess",
+    "iam_group_administrator_access_policy|arn:aws:iam::010603499647:group/cloud-security-admins1",
+    "iam_root_hardware_mfa_enabled|arn:aws:iam::010603499647:mfa",
+    "iam_user_access_not_stale_to_bedrock|arn:aws:iam::010603499647:user/cloud-security-admin",
+    "iam_user_hardware_mfa_enabled|arn:aws:iam::010603499647:user/cloud-security-admin",
+    "iam_user_mfa_enabled_console_access|arn:aws:iam::010603499647:user/cloud-security-admin",
+    "iam_user_with_temporary_credentials|arn:aws:iam::010603499647:user/cloud-security-admin"
+  ]
+}

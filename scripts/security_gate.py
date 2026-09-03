@@ -5,6 +5,7 @@ import sys
 from pathlib import Path
 
 DECISIONS_PATH = Path("reports/risk-decisions.json")
+BASELINE_PATH = Path("config/security-gate-baseline.json")
 REPORT_PATH = Path("reports/security-gate-report.md")
 
 VALID_DECISIONS = {
@@ -26,9 +27,13 @@ REQUIRED_FIELDS = {
 }
 
 
-def load_decisions(path):
+def load_json(path):
     with path.open(encoding="utf-8") as f:
-        data = json.load(f)
+        return json.load(f)
+
+
+def load_decisions(path):
+    data = load_json(path)
 
     if not isinstance(data, list):
         raise ValueError("Risk decisions must be a JSON array")
@@ -36,11 +41,33 @@ def load_decisions(path):
     return data
 
 
+def load_baseline(path):
+    data = load_json(path)
+
+    if not isinstance(data, dict):
+        raise ValueError("Security gate baseline must be a JSON object")
+
+    findings = data.get("findings")
+
+    if not isinstance(findings, list):
+        raise ValueError("Baseline findings must be a JSON array")
+
+    if any(not isinstance(item, str) or not item for item in findings):
+        raise ValueError("Baseline findings must contain non-empty strings")
+
+    return set(findings)
+
+
+def finding_key(decision):
+    return f"{decision['finding_id']}|{decision['resource_uid']}"
+
+
 def validate_decision(decision):
     if not isinstance(decision, dict):
         raise ValueError("Each risk decision must be an object")
 
     missing = REQUIRED_FIELDS - decision.keys()
+
     if missing:
         raise ValueError(
             "Missing required fields: "
@@ -75,9 +102,16 @@ def main():
         if len(sys.argv) > 1
         else DECISIONS_PATH
     )
-    report_path = (
+
+    baseline_path = (
         Path(sys.argv[2])
         if len(sys.argv) > 2
+        else BASELINE_PATH
+    )
+
+    report_path = (
+        Path(sys.argv[3])
+        if len(sys.argv) > 3
         else REPORT_PATH
     )
 
@@ -85,44 +119,75 @@ def main():
         print(f"ERROR: risk decisions not found: {decisions_path}")
         return 2
 
+    if not baseline_path.exists():
+        print(f"ERROR: security gate baseline not found: {baseline_path}")
+        return 2
+
     try:
         decisions = load_decisions(decisions_path)
+        baseline = load_baseline(baseline_path)
 
         for decision in decisions:
             validate_decision(decision)
 
     except (OSError, json.JSONDecodeError, ValueError) as exc:
-        print(f"ERROR: invalid risk decision contract: {exc}")
+        print(f"ERROR: invalid security gate contract: {exc}")
         return 2
 
     blocks = [
         d for d in decisions
         if d["decision"] == "BLOCK"
     ]
+
+    new_blocks = [
+        d for d in blocks
+        if finding_key(d) not in baseline
+    ]
+
+    baseline_blocks = [
+        d for d in blocks
+        if finding_key(d) in baseline
+    ]
+
     investigates = [
         d for d in decisions
         if d["decision"] == "INVESTIGATE"
     ]
+
     exceptions = [
         d for d in decisions
         if d["decision"] == "EXCEPTION"
     ]
+
     report_only = [
         d for d in decisions
         if d["decision"] == "REPORT_ONLY"
     ]
 
+    result = "BLOCK" if new_blocks else "PASS"
+
     print("CSPM SECURITY GATE")
     print("==================")
     print(f"Decisions evaluated: {len(decisions)}")
     print(f"BLOCK:               {len(blocks)}")
+    print(f"Pre-existing BLOCK:  {len(baseline_blocks)}")
+    print(f"New BLOCK:           {len(new_blocks)}")
     print(f"INVESTIGATE:         {len(investigates)}")
     print(f"EXCEPTION:           {len(exceptions)}")
     print(f"REPORT_ONLY:         {len(report_only)}")
 
-    if blocks:
-        print("\nBlocking decisions:")
-        for item in blocks:
+    if new_blocks:
+        print("\nNew blocking decisions:")
+        for item in new_blocks:
+            print(
+                f"- {item['severity'].upper()} | "
+                f"{item['finding_id']} | "
+                f"{item['resource_uid']}"
+            )
+
+    if baseline_blocks:
+        print("\nPre-existing baseline findings:")
+        for item in baseline_blocks:
             print(
                 f"- {item['severity'].upper()} | "
                 f"{item['finding_id']} | "
@@ -146,8 +211,6 @@ def main():
                 f"{item['resource_uid']}"
             )
 
-    result = "BLOCK" if blocks else "PASS"
-
     report_path.parent.mkdir(parents=True, exist_ok=True)
 
     with report_path.open("w", encoding="utf-8") as report:
@@ -157,29 +220,45 @@ def main():
         )
         report.write(f"- BLOCK: {len(blocks)}\n")
         report.write(
+            f"- Pre-existing BLOCK: {len(baseline_blocks)}\n"
+        )
+        report.write(f"- New BLOCK: {len(new_blocks)}\n")
+        report.write(
             f"- INVESTIGATE: {len(investigates)}\n"
         )
         report.write(f"- EXCEPTION: {len(exceptions)}\n")
         report.write(f"- REPORT_ONLY: {len(report_only)}\n")
+        report.write(
+            "- Enforcement: **new BLOCK findings only**\n"
+        )
         report.write(f"- Result: **{result}**\n\n")
 
-        if blocks:
-            report.write("## Blocking Decisions\n\n")
+        if new_blocks:
+            report.write("## New Blocking Decisions\n\n")
             report.write(
                 "| Severity | Finding | Resource | "
                 "Disposition | Owner |\n"
             )
-            report.write(
-                "|---|---|---|---|---|\n"
-            )
+            report.write("|---|---|---|---|---|\n")
 
-            for item in blocks:
+            for item in new_blocks:
                 report.write(
                     f"| {item['severity'].upper()} | "
                     f"`{item['finding_id']}` | "
                     f"`{item['resource_uid']}` | "
                     f"{item['disposition']} | "
                     f"{item['owner']} |\n"
+                )
+
+        if baseline_blocks:
+            report.write(
+                "\n## Pre-existing Baseline Findings\n\n"
+            )
+
+            for item in baseline_blocks:
+                report.write(
+                    f"- `{item['finding_id']}` on "
+                    f"`{item['resource_uid']}`\n"
                 )
 
         if investigates:
@@ -191,7 +270,7 @@ def main():
                 report.write(
                     f"- `{item['finding_id']}` on "
                     f"`{item['resource_uid']}` — "
-                    f"{item['rationale']}\n"
+                    f"{item.get('rationale', 'Evidence required')}\n"
                 )
 
         if exceptions:
@@ -208,7 +287,7 @@ def main():
     print(f"\nRESULT: {result}")
     print(f"Report: {report_path}")
 
-    return 1 if blocks else 0
+    return 1 if new_blocks else 0
 
 
 if __name__ == "__main__":

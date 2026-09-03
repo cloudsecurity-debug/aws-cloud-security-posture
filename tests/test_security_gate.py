@@ -37,11 +37,26 @@ def base_decision(**overrides):
     return decision
 
 
-def run_gate(decisions_path, report_path):
+def run_gate(decisions_path, report_path, baseline_findings=None):
+    baseline_path = decisions_path.parent / "baseline.json"
+
+    baseline_path.write_text(
+        json.dumps(
+            {
+                "version": 1,
+                "enforcement": "new_block_findings_only",
+                "findings": baseline_findings or [],
+            },
+            indent=2,
+        ),
+        encoding="utf-8",
+    )
+
     command = [
         sys.executable,
         str(GATE),
         str(decisions_path),
+        str(baseline_path),
         str(report_path),
     ]
 
@@ -161,7 +176,7 @@ def test_unknown_decision_fails_closed():
         result = run_gate(decisions_path, report_path)
 
         assert result.returncode == 2
-        assert "invalid risk decision contract" in result.stdout
+        assert "invalid security gate contract" in result.stdout
 
 
 def test_missing_required_field_fails_closed():
