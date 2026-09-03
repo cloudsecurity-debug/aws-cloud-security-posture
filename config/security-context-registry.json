@@ -1,0 +1,62 @@
+[
+  {
+    "resource_uid": "arn:aws:iam::010603499647:user/cloud-security-admin",
+    "asset_criticality": "CRITICAL",
+    "exposure": "UNKNOWN",
+    "business_impact": "CRITICAL",
+    "exploitability": "HIGH",
+    "compensating_controls": [],
+    "remediation_risk": "HIGH",
+    "exception_status": "NONE",
+    "evidence": [
+      {
+        "source": "evidence/iam-administrator-access-path.md",
+        "fact": "User is a member of cloud-security-admins1, which has AdministratorAccess with Action:* and Resource:*."
+      },
+      {
+        "source": "evidence/iam-administrator-access-path.md",
+        "fact": "The active IAM access key is used by the current CloudShell/API workflow."
+      },
+      {
+        "source": "evidence/iam-administrator-access-path.md",
+        "fact": "Removing administrative access without validating a replacement could cause administrative lockout."
+      }
+    ]
+  },
+  {
+    "resource_uid": "arn:aws:iam::010603499647:role/cloud-security-autoremediation-config",
+    "asset_criticality": "HIGH",
+    "exposure": "UNKNOWN",
+    "business_impact": "HIGH",
+    "exploitability": "UNKNOWN",
+    "compensating_controls": [
+      "Project 1 remediation role is intentionally outside Project 2 remediation scope."
+    ],
+    "remediation_risk": "HIGH",
+    "exception_status": "NONE",
+    "evidence": [
+      {
+        "source": "evidence/iam-administrator-access-path.md",
+        "fact": "Project 2 will not modify the Project 1 configuration role."
+      }
+    ]
+  },
+  {
+    "resource_uid": "arn:aws:iam::010603499647:role/cloud-security-autoremediation-remediation-lambda",
+    "asset_criticality": "HIGH",
+    "exposure": "UNKNOWN",
+    "business_impact": "HIGH",
+    "exploitability": "UNKNOWN",
+    "compensating_controls": [
+      "Project 1 remediation role is intentionally outside Project 2 remediation scope."
+    ],
+    "remediation_risk": "HIGH",
+    "exception_status": "NONE",
+    "evidence": [
+      {
+        "source": "evidence/iam-administrator-access-path.md",
+        "fact": "Project 2 will not modify the Project 1 remediation role."
+      }
+    ]
+  }
+]

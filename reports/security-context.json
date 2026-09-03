@@ -1,0 +1,330 @@
+[
+  {
+    "resource_uid": "arn:aws:iam::010603499647:group/cloud-security-admins1",
+    "asset_criticality": "UNKNOWN",
+    "exposure": "UNKNOWN",
+    "business_impact": "UNKNOWN",
+    "exploitability": "UNKNOWN",
+    "compensating_controls": [],
+    "remediation_risk": "UNKNOWN",
+    "exception_status": "UNKNOWN",
+    "evidence": [
+      {
+        "source": "prowler",
+        "fact": "iam_administrator_access_with_mfa failed with severity high"
+      }
+    ]
+  },
+  {
+    "resource_uid": "arn:aws:iam::010603499647:root",
+    "asset_criticality": "UNKNOWN",
+    "exposure": "UNKNOWN",
+    "business_impact": "UNKNOWN",
+    "exploitability": "UNKNOWN",
+    "compensating_controls": [],
+    "remediation_risk": "UNKNOWN",
+    "exception_status": "UNKNOWN",
+    "evidence": [
+      {
+        "source": "prowler",
+        "fact": "iam_avoid_root_usage failed with severity high"
+      }
+    ]
+  },
+  {
+    "resource_uid": "arn:aws:iam::aws:policy/AdministratorAccess",
+    "asset_criticality": "UNKNOWN",
+    "exposure": "UNKNOWN",
+    "business_impact": "UNKNOWN",
+    "exploitability": "UNKNOWN",
+    "compensating_controls": [],
+    "remediation_risk": "UNKNOWN",
+    "exception_status": "UNKNOWN",
+    "evidence": [
+      {
+        "source": "prowler",
+        "fact": "iam_aws_attached_policy_no_administrative_privileges failed with severity critical"
+      }
+    ]
+  },
+  {
+    "resource_uid": "arn:aws:iam::010603499647:root",
+    "asset_criticality": "UNKNOWN",
+    "exposure": "UNKNOWN",
+    "business_impact": "UNKNOWN",
+    "exploitability": "UNKNOWN",
+    "compensating_controls": [],
+    "remediation_risk": "UNKNOWN",
+    "exception_status": "UNKNOWN",
+    "evidence": [
+      {
+        "source": "prowler",
+        "fact": "iam_check_saml_providers_sts failed with severity low"
+      }
+    ]
+  },
+  {
+    "resource_uid": "arn:aws:iam::010603499647:group/cloud-security-admins1",
+    "asset_criticality": "UNKNOWN",
+    "exposure": "UNKNOWN",
+    "business_impact": "UNKNOWN",
+    "exploitability": "UNKNOWN",
+    "compensating_controls": [],
+    "remediation_risk": "UNKNOWN",
+    "exception_status": "UNKNOWN",
+    "evidence": [
+      {
+        "source": "prowler",
+        "fact": "iam_group_administrator_access_policy failed with severity high"
+      }
+    ]
+  },
+  {
+    "resource_uid": "arn:aws:iam::010603499647:user/cloud-security-admin",
+    "asset_criticality": "CRITICAL",
+    "exposure": "UNKNOWN",
+    "business_impact": "CRITICAL",
+    "exploitability": "HIGH",
+    "compensating_controls": [],
+    "remediation_risk": "HIGH",
+    "exception_status": "NONE",
+    "evidence": [
+      {
+        "source": "evidence/iam-administrator-access-path.md",
+        "fact": "User is a member of cloud-security-admins1, which has AdministratorAccess with Action:* and Resource:*."
+      },
+      {
+        "source": "evidence/iam-administrator-access-path.md",
+        "fact": "The active IAM access key is used by the current CloudShell/API workflow."
+      },
+      {
+        "source": "evidence/iam-administrator-access-path.md",
+        "fact": "Removing administrative access without validating a replacement could cause administrative lockout."
+      },
+      {
+        "source": "prowler",
+        "fact": "iam_policy_attached_only_to_group_or_roles failed with severity low"
+      }
+    ]
+  },
+  {
+    "resource_uid": "arn:aws:iam::010603499647:role/aws-service-role/support.amazonaws.com/AWSServiceRoleForSupport",
+    "asset_criticality": "UNKNOWN",
+    "exposure": "UNKNOWN",
+    "business_impact": "UNKNOWN",
+    "exploitability": "UNKNOWN",
+    "compensating_controls": [],
+    "remediation_risk": "UNKNOWN",
+    "exception_status": "UNKNOWN",
+    "evidence": [
+      {
+        "source": "prowler",
+        "fact": "iam_role_access_not_stale_to_bedrock failed with severity medium"
+      }
+    ]
+  },
+  {
+    "resource_uid": "arn:aws:iam::010603499647:role/cloud-security-autoremediation-config",
+    "asset_criticality": "HIGH",
+    "exposure": "UNKNOWN",
+    "business_impact": "HIGH",
+    "exploitability": "UNKNOWN",
+    "compensating_controls": [
+      "Project 1 remediation role is intentionally outside Project 2 remediation scope."
+    ],
+    "remediation_risk": "HIGH",
+    "exception_status": "NONE",
+    "evidence": [
+      {
+        "source": "evidence/iam-administrator-access-path.md",
+        "fact": "Project 2 will not modify the Project 1 configuration role."
+      },
+      {
+        "source": "prowler",
+        "fact": "iam_role_cross_service_confused_deputy_prevention failed with severity high"
+      }
+    ]
+  },
+  {
+    "resource_uid": "arn:aws:iam::010603499647:role/cloud-security-autoremediation-remediation-lambda",
+    "asset_criticality": "HIGH",
+    "exposure": "UNKNOWN",
+    "business_impact": "HIGH",
+    "exploitability": "UNKNOWN",
+    "compensating_controls": [
+      "Project 1 remediation role is intentionally outside Project 2 remediation scope."
+    ],
+    "remediation_risk": "HIGH",
+    "exception_status": "NONE",
+    "evidence": [
+      {
+        "source": "evidence/iam-administrator-access-path.md",
+        "fact": "Project 2 will not modify the Project 1 remediation role."
+      },
+      {
+        "source": "prowler",
+        "fact": "iam_role_cross_service_confused_deputy_prevention failed with severity high"
+      }
+    ]
+  },
+  {
+    "resource_uid": "arn:aws:iam::010603499647:mfa",
+    "asset_criticality": "UNKNOWN",
+    "exposure": "UNKNOWN",
+    "business_impact": "UNKNOWN",
+    "exploitability": "UNKNOWN",
+    "compensating_controls": [],
+    "remediation_risk": "UNKNOWN",
+    "exception_status": "UNKNOWN",
+    "evidence": [
+      {
+        "source": "prowler",
+        "fact": "iam_root_hardware_mfa_enabled failed with severity critical"
+      }
+    ]
+  },
+  {
+    "resource_uid": "arn:aws:iam::aws:policy/SecurityAudit",
+    "asset_criticality": "UNKNOWN",
+    "exposure": "UNKNOWN",
+    "business_impact": "UNKNOWN",
+    "exploitability": "UNKNOWN",
+    "compensating_controls": [],
+    "remediation_risk": "UNKNOWN",
+    "exception_status": "UNKNOWN",
+    "evidence": [
+      {
+        "source": "prowler",
+        "fact": "iam_securityaudit_role_created failed with severity low"
+      }
+    ]
+  },
+  {
+    "resource_uid": "arn:aws:iam::aws:policy/AWSSupportAccess",
+    "asset_criticality": "UNKNOWN",
+    "exposure": "UNKNOWN",
+    "business_impact": "UNKNOWN",
+    "exploitability": "UNKNOWN",
+    "compensating_controls": [],
+    "remediation_risk": "UNKNOWN",
+    "exception_status": "UNKNOWN",
+    "evidence": [
+      {
+        "source": "prowler",
+        "fact": "iam_support_role_created failed with severity low"
+      }
+    ]
+  },
+  {
+    "resource_uid": "arn:aws:iam::010603499647:user/cloud-security-admin",
+    "asset_criticality": "CRITICAL",
+    "exposure": "UNKNOWN",
+    "business_impact": "CRITICAL",
+    "exploitability": "HIGH",
+    "compensating_controls": [],
+    "remediation_risk": "HIGH",
+    "exception_status": "NONE",
+    "evidence": [
+      {
+        "source": "evidence/iam-administrator-access-path.md",
+        "fact": "User is a member of cloud-security-admins1, which has AdministratorAccess with Action:* and Resource:*."
+      },
+      {
+        "source": "evidence/iam-administrator-access-path.md",
+        "fact": "The active IAM access key is used by the current CloudShell/API workflow."
+      },
+      {
+        "source": "evidence/iam-administrator-access-path.md",
+        "fact": "Removing administrative access without validating a replacement could cause administrative lockout."
+      },
+      {
+        "source": "prowler",
+        "fact": "iam_user_access_not_stale_to_bedrock failed with severity medium"
+      }
+    ]
+  },
+  {
+    "resource_uid": "arn:aws:iam::010603499647:user/cloud-security-admin",
+    "asset_criticality": "CRITICAL",
+    "exposure": "UNKNOWN",
+    "business_impact": "CRITICAL",
+    "exploitability": "HIGH",
+    "compensating_controls": [],
+    "remediation_risk": "HIGH",
+    "exception_status": "NONE",
+    "evidence": [
+      {
+        "source": "evidence/iam-administrator-access-path.md",
+        "fact": "User is a member of cloud-security-admins1, which has AdministratorAccess with Action:* and Resource:*."
+      },
+      {
+        "source": "evidence/iam-administrator-access-path.md",
+        "fact": "The active IAM access key is used by the current CloudShell/API workflow."
+      },
+      {
+        "source": "evidence/iam-administrator-access-path.md",
+        "fact": "Removing administrative access without validating a replacement could cause administrative lockout."
+      },
+      {
+        "source": "prowler",
+        "fact": "iam_user_hardware_mfa_enabled failed with severity high"
+      }
+    ]
+  },
+  {
+    "resource_uid": "arn:aws:iam::010603499647:user/cloud-security-admin",
+    "asset_criticality": "CRITICAL",
+    "exposure": "UNKNOWN",
+    "business_impact": "CRITICAL",
+    "exploitability": "HIGH",
+    "compensating_controls": [],
+    "remediation_risk": "HIGH",
+    "exception_status": "NONE",
+    "evidence": [
+      {
+        "source": "evidence/iam-administrator-access-path.md",
+        "fact": "User is a member of cloud-security-admins1, which has AdministratorAccess with Action:* and Resource:*."
+      },
+      {
+        "source": "evidence/iam-administrator-access-path.md",
+        "fact": "The active IAM access key is used by the current CloudShell/API workflow."
+      },
+      {
+        "source": "evidence/iam-administrator-access-path.md",
+        "fact": "Removing administrative access without validating a replacement could cause administrative lockout."
+      },
+      {
+        "source": "prowler",
+        "fact": "iam_user_mfa_enabled_console_access failed with severity high"
+      }
+    ]
+  },
+  {
+    "resource_uid": "arn:aws:iam::010603499647:user/cloud-security-admin",
+    "asset_criticality": "CRITICAL",
+    "exposure": "UNKNOWN",
+    "business_impact": "CRITICAL",
+    "exploitability": "HIGH",
+    "compensating_controls": [],
+    "remediation_risk": "HIGH",
+    "exception_status": "NONE",
+    "evidence": [
+      {
+        "source": "evidence/iam-administrator-access-path.md",
+        "fact": "User is a member of cloud-security-admins1, which has AdministratorAccess with Action:* and Resource:*."
+      },
+      {
+        "source": "evidence/iam-administrator-access-path.md",
+        "fact": "The active IAM access key is used by the current CloudShell/API workflow."
+      },
+      {
+        "source": "evidence/iam-administrator-access-path.md",
+        "fact": "Removing administrative access without validating a replacement could cause administrative lockout."
+      },
+      {
+        "source": "prowler",
+        "fact": "iam_user_with_temporary_credentials failed with severity high"
+      }
+    ]
+  }
+]

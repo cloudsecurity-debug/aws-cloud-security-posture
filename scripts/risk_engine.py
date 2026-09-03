@@ -7,7 +7,9 @@ from pathlib import Path
 
 POLICY_PATH = Path("config/risk-policy.json")
 NORMALIZED_FINDINGS = Path("reports/normalized-findings.json")
+SECURITY_CONTEXT = Path("reports/security-context.json")
 REPORT_PATH = Path("reports/risk-decision-report.md")
+DECISIONS_PATH = Path("reports/risk-decisions.json")
 
 
 def load_json(path):
@@ -24,18 +26,32 @@ def normalize(value):
     return (value or "").strip()
 
 
-def calculate_score(finding, policy):
-    severity = normalize(finding.get("severity")).lower()
+def context_score(context, policy):
+    scoring = policy["context_scoring"]
 
-    severity_config = policy.get("severity", {}).get(severity)
+    dimensions = (
+        "asset_criticality",
+        "exposure",
+        "business_impact",
+        "exploitability",
+    )
 
-    if severity_config is None:
-        raise ValueError(f"Unknown severity: {severity!r}")
+    contributions = {}
 
-    return severity_config["base_score"]
+    for dimension in dimensions:
+        value = (context.get(dimension) or "").strip().upper()
+
+        if value not in scoring[dimension]:
+            raise ValueError(
+                f"Unknown {dimension}: {value!r}"
+            )
+
+        contributions[dimension] = scoring[dimension][value]
+
+    return sum(contributions.values()), contributions
 
 
-def evaluate(finding, policy):
+def evaluate(finding, context, policy):
     required = policy["decision_model"]["required_fields"]
 
     missing = [
@@ -51,7 +67,8 @@ def evaluate(finding, policy):
 
     severity = normalize(finding["severity"]).lower()
     disposition = normalize(finding["disposition"]).upper()
-    status = normalize(finding["lifecycle_status"]).upper()
+    status = normalize(finding["status"]).upper()
+    lifecycle_status = normalize(finding["lifecycle_status"]).upper()
 
     if severity not in policy["severity"]:
         raise ValueError(f"Unknown severity: {severity}")
@@ -59,23 +76,65 @@ def evaluate(finding, policy):
     if disposition not in policy["dispositions"]:
         raise ValueError(f"Unknown disposition: {disposition}")
 
-    if status not in policy["lifecycle"]:
+    if status not in {"FAIL", "PASS", "MUTED"}:
         raise ValueError(f"Unknown status: {status}")
 
-    score = calculate_score(finding, policy)
+    if lifecycle_status not in policy["lifecycle"]:
+        raise ValueError(
+            f"Unknown lifecycle status: {lifecycle_status}"
+        )
+
+    base_score = policy["severity"][severity]["base_score"]
+    base_action = policy["severity"][severity]["default_action"]
+
+    contextual_score, contributions = context_score(
+        context,
+        policy,
+    )
+
+    total_score = min(
+        base_score + contextual_score,
+        100,
+    )
+
+    threshold = policy["context_scoring"]["block_threshold"]
 
     if disposition == "EXCEPTION":
         decision = "EXCEPTION"
+        rationale = (
+            "Explicit governance exception takes precedence "
+            "over contextual risk."
+        )
+
     elif disposition == "REPORT_ONLY":
         decision = "REPORT_ONLY"
-    elif disposition == "INVESTIGATE":
-        decision = "INVESTIGATE"
-    elif severity in ("critical", "high"):
+        rationale = (
+            "Explicit REPORT_ONLY governance disposition "
+            "keeps the finding non-blocking."
+        )
+
+    elif total_score >= threshold:
         decision = "BLOCK"
-    elif severity == "medium":
-        decision = "INVESTIGATE"
+        rationale = (
+            f"Effective risk score {total_score} reaches "
+            f"the block threshold of {threshold}."
+        )
+
     else:
-        decision = "REPORT_ONLY"
+        decision = base_action
+
+        if decision == "INVESTIGATE":
+            rationale = (
+                f"Effective score {total_score} remains below "
+                f"the block threshold; evidence requires "
+                f"investigation."
+            )
+        else:
+            rationale = (
+                f"Effective score {total_score} remains below "
+                f"the block threshold and follows the severity "
+                f"default action."
+            )
 
     return {
         "finding_id": finding["finding_id"],
@@ -85,8 +144,14 @@ def evaluate(finding, policy):
         "owner": finding["owner"],
         "disposition": disposition,
         "status": status,
-        "risk_score": score,
+        "lifecycle_status": lifecycle_status,
+        "base_score": base_score,
+        "context_score": contextual_score,
+        "risk_score": total_score,
         "decision": decision,
+        "rationale": rationale,
+        "context_contributions": contributions,
+        "context": context,
     }
 
 
@@ -102,13 +167,42 @@ def main():
         )
         return 2
 
+    if not SECURITY_CONTEXT.exists():
+        print(
+            f"ERROR: security context not found: "
+            f"{SECURITY_CONTEXT}"
+        )
+        return 2
+
     policy = load_json(POLICY_PATH)
     findings = load_json(NORMALIZED_FINDINGS)
+    contexts = load_json(SECURITY_CONTEXT)
 
-    decisions = [
-        evaluate(finding, policy)
-        for finding in findings
-    ]
+    context_index = {
+        item["resource_uid"]: item
+        for item in contexts
+    }
+
+    decisions = []
+
+    for finding in findings:
+        context = context_index.get(
+            finding["resource_uid"],
+            {
+                "resource_uid": finding["resource_uid"],
+                "asset_criticality": "UNKNOWN",
+                "exposure": "UNKNOWN",
+                "business_impact": "UNKNOWN",
+                "exploitability": "UNKNOWN",
+                "compensating_controls": [],
+                "remediation_risk": "UNKNOWN",
+                "exception_status": "UNKNOWN",
+                "evidence": []
+            }
+        )
+
+        decision = evaluate(finding, context, policy)
+        decisions.append(decision)
 
     counts = {}
 
@@ -125,6 +219,10 @@ def main():
     print(f"REPORT_ONLY:       {counts.get('REPORT_ONLY', 0)}")
 
     REPORT_PATH.parent.mkdir(parents=True, exist_ok=True)
+    DECISIONS_PATH.parent.mkdir(parents=True, exist_ok=True)
+    with DECISIONS_PATH.open("w", encoding="utf-8") as decisions_file:
+        json.dump(decisions, decisions_file, indent=2)
+        decisions_file.write("\n")
 
     with REPORT_PATH.open("w", encoding="utf-8") as report:
         report.write("# CSPM Risk Decision Report\n\n")
@@ -138,10 +236,10 @@ def main():
         )
 
         report.write(
-            "| Score | Severity | Decision | Disposition | Owner | Finding | Resource |\n"
+            "| Score | Base | Context | Severity | Decision | Disposition | Owner | Finding | Resource |\n"
         )
         report.write(
-            "|---:|---|---|---|---|---|---|\n"
+            "|---:|---:|---:|---|---|---|---|---|---|\n"
         )
 
         for decision in sorted(
@@ -151,12 +249,57 @@ def main():
         ):
             report.write(
                 f"| {decision['risk_score']} | "
+                f"{decision['base_score']} | "
+                f"{decision['context_score']} | "
                 f"{decision['severity'].upper()} | "
                 f"{decision['decision']} | "
                 f"{decision['disposition']} | "
                 f"{decision['owner']} | "
                 f"`{decision['finding_id']}` | "
                 f"`{decision['resource_uid']}` |\n"
+            )
+
+        report.write("\n## Decision Rationale\n\n")
+
+        for decision in sorted(
+            decisions,
+            key=lambda item: item["risk_score"],
+            reverse=True,
+        ):
+            report.write(
+                f"### `{decision['finding_id']}` — {decision['decision']}\n\n"
+            )
+            report.write(
+                f"- **Resource:** `{decision['resource_uid']}`\n"
+            )
+            report.write(
+                f"- **Severity:** {decision['severity'].upper()}\n"
+            )
+            report.write(
+                f"- **Base score:** {decision['base_score']}\n"
+            )
+            report.write(
+                f"- **Context score:** {decision['context_score']}\n"
+            )
+
+            contributions = decision["context_contributions"]
+            report.write("- **Context contributions:** ")
+            report.write(
+                ", ".join(
+                    f"{dimension}={value:+d}"
+                    for dimension, value in contributions.items()
+                )
+            )
+            report.write("\n")
+
+            report.write(
+                f"- **Disposition:** {decision['disposition']}\n"
+            )
+            report.write(
+                f"- **Lifecycle:** {decision['lifecycle_status']}\n"
+            )
+            report.write(
+                f"- **Rationale:** {decision['rationale']}\n\n"
             )
 
     print(f"\nReport: {REPORT_PATH}")
@@ -175,7 +318,7 @@ def main():
             f"{decision['resource_uid']}"
         )
 
-    return 1 if counts.get("BLOCK", 0) > 0 else 0
+    return 0
 
 
 if __name__ == "__main__":

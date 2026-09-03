@@ -1,0 +1,666 @@
+[
+  {
+    "finding_id": "iam_administrator_access_with_mfa",
+    "resource_uid": "arn:aws:iam::010603499647:group/cloud-security-admins1",
+    "severity": "high",
+    "category": "identity-access",
+    "owner": "IAM",
+    "disposition": "MANUAL_REMEDIATE",
+    "status": "FAIL",
+    "lifecycle_status": "OPEN",
+    "base_score": 30,
+    "context_score": 0,
+    "risk_score": 30,
+    "decision": "BLOCK",
+    "rationale": "Effective score 30 remains below the block threshold and follows the severity default action.",
+    "context_contributions": {
+      "asset_criticality": 0,
+      "exposure": 0,
+      "business_impact": 0,
+      "exploitability": 0
+    },
+    "context": {
+      "resource_uid": "arn:aws:iam::010603499647:group/cloud-security-admins1",
+      "asset_criticality": "UNKNOWN",
+      "exposure": "UNKNOWN",
+      "business_impact": "UNKNOWN",
+      "exploitability": "UNKNOWN",
+      "compensating_controls": [],
+      "remediation_risk": "UNKNOWN",
+      "exception_status": "UNKNOWN",
+      "evidence": [
+        {
+          "source": "prowler",
+          "fact": "iam_group_administrator_access_policy failed with severity high"
+        }
+      ]
+    }
+  },
+  {
+    "finding_id": "iam_avoid_root_usage",
+    "resource_uid": "arn:aws:iam::010603499647:root",
+    "severity": "high",
+    "category": "identity-access",
+    "owner": "ACCOUNT_SECURITY",
+    "disposition": "MANUAL_REMEDIATE",
+    "status": "FAIL",
+    "lifecycle_status": "OPEN",
+    "base_score": 30,
+    "context_score": 0,
+    "risk_score": 30,
+    "decision": "BLOCK",
+    "rationale": "Effective score 30 remains below the block threshold and follows the severity default action.",
+    "context_contributions": {
+      "asset_criticality": 0,
+      "exposure": 0,
+      "business_impact": 0,
+      "exploitability": 0
+    },
+    "context": {
+      "resource_uid": "arn:aws:iam::010603499647:root",
+      "asset_criticality": "UNKNOWN",
+      "exposure": "UNKNOWN",
+      "business_impact": "UNKNOWN",
+      "exploitability": "UNKNOWN",
+      "compensating_controls": [],
+      "remediation_risk": "UNKNOWN",
+      "exception_status": "UNKNOWN",
+      "evidence": [
+        {
+          "source": "prowler",
+          "fact": "iam_check_saml_providers_sts failed with severity low"
+        }
+      ]
+    }
+  },
+  {
+    "finding_id": "iam_aws_attached_policy_no_administrative_privileges",
+    "resource_uid": "arn:aws:iam::aws:policy/AdministratorAccess",
+    "severity": "critical",
+    "category": "identity-access",
+    "owner": "IAM",
+    "disposition": "MANUAL_REMEDIATE",
+    "status": "FAIL",
+    "lifecycle_status": "OPEN",
+    "base_score": 40,
+    "context_score": 0,
+    "risk_score": 40,
+    "decision": "BLOCK",
+    "rationale": "Effective risk score 40 reaches the block threshold of 40.",
+    "context_contributions": {
+      "asset_criticality": 0,
+      "exposure": 0,
+      "business_impact": 0,
+      "exploitability": 0
+    },
+    "context": {
+      "resource_uid": "arn:aws:iam::aws:policy/AdministratorAccess",
+      "asset_criticality": "UNKNOWN",
+      "exposure": "UNKNOWN",
+      "business_impact": "UNKNOWN",
+      "exploitability": "UNKNOWN",
+      "compensating_controls": [],
+      "remediation_risk": "UNKNOWN",
+      "exception_status": "UNKNOWN",
+      "evidence": [
+        {
+          "source": "prowler",
+          "fact": "iam_aws_attached_policy_no_administrative_privileges failed with severity critical"
+        }
+      ]
+    }
+  },
+  {
+    "finding_id": "iam_check_saml_providers_sts",
+    "resource_uid": "arn:aws:iam::010603499647:root",
+    "severity": "low",
+    "category": "identity-access",
+    "owner": "IDENTITY",
+    "disposition": "REPORT_ONLY",
+    "status": "FAIL",
+    "lifecycle_status": "OPEN",
+    "base_score": 10,
+    "context_score": 0,
+    "risk_score": 10,
+    "decision": "REPORT_ONLY",
+    "rationale": "Explicit REPORT_ONLY governance disposition keeps the finding non-blocking.",
+    "context_contributions": {
+      "asset_criticality": 0,
+      "exposure": 0,
+      "business_impact": 0,
+      "exploitability": 0
+    },
+    "context": {
+      "resource_uid": "arn:aws:iam::010603499647:root",
+      "asset_criticality": "UNKNOWN",
+      "exposure": "UNKNOWN",
+      "business_impact": "UNKNOWN",
+      "exploitability": "UNKNOWN",
+      "compensating_controls": [],
+      "remediation_risk": "UNKNOWN",
+      "exception_status": "UNKNOWN",
+      "evidence": [
+        {
+          "source": "prowler",
+          "fact": "iam_check_saml_providers_sts failed with severity low"
+        }
+      ]
+    }
+  },
+  {
+    "finding_id": "iam_group_administrator_access_policy",
+    "resource_uid": "arn:aws:iam::010603499647:group/cloud-security-admins1",
+    "severity": "high",
+    "category": "identity-access",
+    "owner": "IAM",
+    "disposition": "MANUAL_REMEDIATE",
+    "status": "FAIL",
+    "lifecycle_status": "OPEN",
+    "base_score": 30,
+    "context_score": 0,
+    "risk_score": 30,
+    "decision": "BLOCK",
+    "rationale": "Effective score 30 remains below the block threshold and follows the severity default action.",
+    "context_contributions": {
+      "asset_criticality": 0,
+      "exposure": 0,
+      "business_impact": 0,
+      "exploitability": 0
+    },
+    "context": {
+      "resource_uid": "arn:aws:iam::010603499647:group/cloud-security-admins1",
+      "asset_criticality": "UNKNOWN",
+      "exposure": "UNKNOWN",
+      "business_impact": "UNKNOWN",
+      "exploitability": "UNKNOWN",
+      "compensating_controls": [],
+      "remediation_risk": "UNKNOWN",
+      "exception_status": "UNKNOWN",
+      "evidence": [
+        {
+          "source": "prowler",
+          "fact": "iam_group_administrator_access_policy failed with severity high"
+        }
+      ]
+    }
+  },
+  {
+    "finding_id": "iam_policy_attached_only_to_group_or_roles",
+    "resource_uid": "arn:aws:iam::010603499647:user/cloud-security-admin",
+    "severity": "low",
+    "category": "identity-access",
+    "owner": "IAM",
+    "disposition": "REPORT_ONLY",
+    "status": "FAIL",
+    "lifecycle_status": "OPEN",
+    "base_score": 10,
+    "context_score": 30,
+    "risk_score": 40,
+    "decision": "REPORT_ONLY",
+    "rationale": "Explicit REPORT_ONLY governance disposition keeps the finding non-blocking.",
+    "context_contributions": {
+      "asset_criticality": 10,
+      "exposure": 0,
+      "business_impact": 10,
+      "exploitability": 10
+    },
+    "context": {
+      "resource_uid": "arn:aws:iam::010603499647:user/cloud-security-admin",
+      "asset_criticality": "CRITICAL",
+      "exposure": "UNKNOWN",
+      "business_impact": "CRITICAL",
+      "exploitability": "HIGH",
+      "compensating_controls": [],
+      "remediation_risk": "HIGH",
+      "exception_status": "NONE",
+      "evidence": [
+        {
+          "source": "evidence/iam-administrator-access-path.md",
+          "fact": "User is a member of cloud-security-admins1, which has AdministratorAccess with Action:* and Resource:*."
+        },
+        {
+          "source": "evidence/iam-administrator-access-path.md",
+          "fact": "The active IAM access key is used by the current CloudShell/API workflow."
+        },
+        {
+          "source": "evidence/iam-administrator-access-path.md",
+          "fact": "Removing administrative access without validating a replacement could cause administrative lockout."
+        },
+        {
+          "source": "prowler",
+          "fact": "iam_user_with_temporary_credentials failed with severity high"
+        }
+      ]
+    }
+  },
+  {
+    "finding_id": "iam_role_access_not_stale_to_bedrock",
+    "resource_uid": "arn:aws:iam::010603499647:role/aws-service-role/support.amazonaws.com/AWSServiceRoleForSupport",
+    "severity": "medium",
+    "category": "identity-access",
+    "owner": "IAM",
+    "disposition": "INVESTIGATE",
+    "status": "FAIL",
+    "lifecycle_status": "OPEN",
+    "base_score": 20,
+    "context_score": 0,
+    "risk_score": 20,
+    "decision": "INVESTIGATE",
+    "rationale": "Effective score 20 remains below the block threshold; evidence requires investigation.",
+    "context_contributions": {
+      "asset_criticality": 0,
+      "exposure": 0,
+      "business_impact": 0,
+      "exploitability": 0
+    },
+    "context": {
+      "resource_uid": "arn:aws:iam::010603499647:role/aws-service-role/support.amazonaws.com/AWSServiceRoleForSupport",
+      "asset_criticality": "UNKNOWN",
+      "exposure": "UNKNOWN",
+      "business_impact": "UNKNOWN",
+      "exploitability": "UNKNOWN",
+      "compensating_controls": [],
+      "remediation_risk": "UNKNOWN",
+      "exception_status": "UNKNOWN",
+      "evidence": [
+        {
+          "source": "prowler",
+          "fact": "iam_role_access_not_stale_to_bedrock failed with severity medium"
+        }
+      ]
+    }
+  },
+  {
+    "finding_id": "iam_role_cross_service_confused_deputy_prevention",
+    "resource_uid": "arn:aws:iam::010603499647:role/cloud-security-autoremediation-config",
+    "severity": "high",
+    "category": "identity-access",
+    "owner": "PROJECT_1",
+    "disposition": "EXCEPTION",
+    "status": "FAIL",
+    "lifecycle_status": "OPEN",
+    "base_score": 30,
+    "context_score": 10,
+    "risk_score": 40,
+    "decision": "EXCEPTION",
+    "rationale": "Explicit governance exception takes precedence over contextual risk.",
+    "context_contributions": {
+      "asset_criticality": 5,
+      "exposure": 0,
+      "business_impact": 5,
+      "exploitability": 0
+    },
+    "context": {
+      "resource_uid": "arn:aws:iam::010603499647:role/cloud-security-autoremediation-config",
+      "asset_criticality": "HIGH",
+      "exposure": "UNKNOWN",
+      "business_impact": "HIGH",
+      "exploitability": "UNKNOWN",
+      "compensating_controls": [
+        "Project 1 remediation role is intentionally outside Project 2 remediation scope."
+      ],
+      "remediation_risk": "HIGH",
+      "exception_status": "NONE",
+      "evidence": [
+        {
+          "source": "evidence/iam-administrator-access-path.md",
+          "fact": "Project 2 will not modify the Project 1 configuration role."
+        },
+        {
+          "source": "prowler",
+          "fact": "iam_role_cross_service_confused_deputy_prevention failed with severity high"
+        }
+      ]
+    }
+  },
+  {
+    "finding_id": "iam_role_cross_service_confused_deputy_prevention",
+    "resource_uid": "arn:aws:iam::010603499647:role/cloud-security-autoremediation-remediation-lambda",
+    "severity": "high",
+    "category": "identity-access",
+    "owner": "PROJECT_1",
+    "disposition": "EXCEPTION",
+    "status": "FAIL",
+    "lifecycle_status": "OPEN",
+    "base_score": 30,
+    "context_score": 10,
+    "risk_score": 40,
+    "decision": "EXCEPTION",
+    "rationale": "Explicit governance exception takes precedence over contextual risk.",
+    "context_contributions": {
+      "asset_criticality": 5,
+      "exposure": 0,
+      "business_impact": 5,
+      "exploitability": 0
+    },
+    "context": {
+      "resource_uid": "arn:aws:iam::010603499647:role/cloud-security-autoremediation-remediation-lambda",
+      "asset_criticality": "HIGH",
+      "exposure": "UNKNOWN",
+      "business_impact": "HIGH",
+      "exploitability": "UNKNOWN",
+      "compensating_controls": [
+        "Project 1 remediation role is intentionally outside Project 2 remediation scope."
+      ],
+      "remediation_risk": "HIGH",
+      "exception_status": "NONE",
+      "evidence": [
+        {
+          "source": "evidence/iam-administrator-access-path.md",
+          "fact": "Project 2 will not modify the Project 1 remediation role."
+        },
+        {
+          "source": "prowler",
+          "fact": "iam_role_cross_service_confused_deputy_prevention failed with severity high"
+        }
+      ]
+    }
+  },
+  {
+    "finding_id": "iam_root_hardware_mfa_enabled",
+    "resource_uid": "arn:aws:iam::010603499647:mfa",
+    "severity": "critical",
+    "category": "identity-access",
+    "owner": "ACCOUNT_SECURITY",
+    "disposition": "MANUAL_REMEDIATE",
+    "status": "FAIL",
+    "lifecycle_status": "OPEN",
+    "base_score": 40,
+    "context_score": 0,
+    "risk_score": 40,
+    "decision": "BLOCK",
+    "rationale": "Effective risk score 40 reaches the block threshold of 40.",
+    "context_contributions": {
+      "asset_criticality": 0,
+      "exposure": 0,
+      "business_impact": 0,
+      "exploitability": 0
+    },
+    "context": {
+      "resource_uid": "arn:aws:iam::010603499647:mfa",
+      "asset_criticality": "UNKNOWN",
+      "exposure": "UNKNOWN",
+      "business_impact": "UNKNOWN",
+      "exploitability": "UNKNOWN",
+      "compensating_controls": [],
+      "remediation_risk": "UNKNOWN",
+      "exception_status": "UNKNOWN",
+      "evidence": [
+        {
+          "source": "prowler",
+          "fact": "iam_root_hardware_mfa_enabled failed with severity critical"
+        }
+      ]
+    }
+  },
+  {
+    "finding_id": "iam_securityaudit_role_created",
+    "resource_uid": "arn:aws:iam::aws:policy/SecurityAudit",
+    "severity": "low",
+    "category": "identity-access",
+    "owner": "GOVERNANCE",
+    "disposition": "REPORT_ONLY",
+    "status": "FAIL",
+    "lifecycle_status": "OPEN",
+    "base_score": 10,
+    "context_score": 0,
+    "risk_score": 10,
+    "decision": "REPORT_ONLY",
+    "rationale": "Explicit REPORT_ONLY governance disposition keeps the finding non-blocking.",
+    "context_contributions": {
+      "asset_criticality": 0,
+      "exposure": 0,
+      "business_impact": 0,
+      "exploitability": 0
+    },
+    "context": {
+      "resource_uid": "arn:aws:iam::aws:policy/SecurityAudit",
+      "asset_criticality": "UNKNOWN",
+      "exposure": "UNKNOWN",
+      "business_impact": "UNKNOWN",
+      "exploitability": "UNKNOWN",
+      "compensating_controls": [],
+      "remediation_risk": "UNKNOWN",
+      "exception_status": "UNKNOWN",
+      "evidence": [
+        {
+          "source": "prowler",
+          "fact": "iam_securityaudit_role_created failed with severity low"
+        }
+      ]
+    }
+  },
+  {
+    "finding_id": "iam_support_role_created",
+    "resource_uid": "arn:aws:iam::aws:policy/AWSSupportAccess",
+    "severity": "low",
+    "category": "identity-access",
+    "owner": "GOVERNANCE",
+    "disposition": "REPORT_ONLY",
+    "status": "FAIL",
+    "lifecycle_status": "OPEN",
+    "base_score": 10,
+    "context_score": 0,
+    "risk_score": 10,
+    "decision": "REPORT_ONLY",
+    "rationale": "Explicit REPORT_ONLY governance disposition keeps the finding non-blocking.",
+    "context_contributions": {
+      "asset_criticality": 0,
+      "exposure": 0,
+      "business_impact": 0,
+      "exploitability": 0
+    },
+    "context": {
+      "resource_uid": "arn:aws:iam::aws:policy/AWSSupportAccess",
+      "asset_criticality": "UNKNOWN",
+      "exposure": "UNKNOWN",
+      "business_impact": "UNKNOWN",
+      "exploitability": "UNKNOWN",
+      "compensating_controls": [],
+      "remediation_risk": "UNKNOWN",
+      "exception_status": "UNKNOWN",
+      "evidence": [
+        {
+          "source": "prowler",
+          "fact": "iam_support_role_created failed with severity low"
+        }
+      ]
+    }
+  },
+  {
+    "finding_id": "iam_user_access_not_stale_to_bedrock",
+    "resource_uid": "arn:aws:iam::010603499647:user/cloud-security-admin",
+    "severity": "medium",
+    "category": "identity-access",
+    "owner": "IAM",
+    "disposition": "INVESTIGATE",
+    "status": "FAIL",
+    "lifecycle_status": "OPEN",
+    "base_score": 20,
+    "context_score": 30,
+    "risk_score": 50,
+    "decision": "BLOCK",
+    "rationale": "Effective risk score 50 reaches the block threshold of 40.",
+    "context_contributions": {
+      "asset_criticality": 10,
+      "exposure": 0,
+      "business_impact": 10,
+      "exploitability": 10
+    },
+    "context": {
+      "resource_uid": "arn:aws:iam::010603499647:user/cloud-security-admin",
+      "asset_criticality": "CRITICAL",
+      "exposure": "UNKNOWN",
+      "business_impact": "CRITICAL",
+      "exploitability": "HIGH",
+      "compensating_controls": [],
+      "remediation_risk": "HIGH",
+      "exception_status": "NONE",
+      "evidence": [
+        {
+          "source": "evidence/iam-administrator-access-path.md",
+          "fact": "User is a member of cloud-security-admins1, which has AdministratorAccess with Action:* and Resource:*."
+        },
+        {
+          "source": "evidence/iam-administrator-access-path.md",
+          "fact": "The active IAM access key is used by the current CloudShell/API workflow."
+        },
+        {
+          "source": "evidence/iam-administrator-access-path.md",
+          "fact": "Removing administrative access without validating a replacement could cause administrative lockout."
+        },
+        {
+          "source": "prowler",
+          "fact": "iam_user_with_temporary_credentials failed with severity high"
+        }
+      ]
+    }
+  },
+  {
+    "finding_id": "iam_user_hardware_mfa_enabled",
+    "resource_uid": "arn:aws:iam::010603499647:user/cloud-security-admin",
+    "severity": "high",
+    "category": "identity-access",
+    "owner": "IAM",
+    "disposition": "MANUAL_REMEDIATE",
+    "status": "FAIL",
+    "lifecycle_status": "OPEN",
+    "base_score": 30,
+    "context_score": 30,
+    "risk_score": 60,
+    "decision": "BLOCK",
+    "rationale": "Effective risk score 60 reaches the block threshold of 40.",
+    "context_contributions": {
+      "asset_criticality": 10,
+      "exposure": 0,
+      "business_impact": 10,
+      "exploitability": 10
+    },
+    "context": {
+      "resource_uid": "arn:aws:iam::010603499647:user/cloud-security-admin",
+      "asset_criticality": "CRITICAL",
+      "exposure": "UNKNOWN",
+      "business_impact": "CRITICAL",
+      "exploitability": "HIGH",
+      "compensating_controls": [],
+      "remediation_risk": "HIGH",
+      "exception_status": "NONE",
+      "evidence": [
+        {
+          "source": "evidence/iam-administrator-access-path.md",
+          "fact": "User is a member of cloud-security-admins1, which has AdministratorAccess with Action:* and Resource:*."
+        },
+        {
+          "source": "evidence/iam-administrator-access-path.md",
+          "fact": "The active IAM access key is used by the current CloudShell/API workflow."
+        },
+        {
+          "source": "evidence/iam-administrator-access-path.md",
+          "fact": "Removing administrative access without validating a replacement could cause administrative lockout."
+        },
+        {
+          "source": "prowler",
+          "fact": "iam_user_with_temporary_credentials failed with severity high"
+        }
+      ]
+    }
+  },
+  {
+    "finding_id": "iam_user_mfa_enabled_console_access",
+    "resource_uid": "arn:aws:iam::010603499647:user/cloud-security-admin",
+    "severity": "high",
+    "category": "identity-access",
+    "owner": "IAM",
+    "disposition": "MANUAL_REMEDIATE",
+    "status": "FAIL",
+    "lifecycle_status": "OPEN",
+    "base_score": 30,
+    "context_score": 30,
+    "risk_score": 60,
+    "decision": "BLOCK",
+    "rationale": "Effective risk score 60 reaches the block threshold of 40.",
+    "context_contributions": {
+      "asset_criticality": 10,
+      "exposure": 0,
+      "business_impact": 10,
+      "exploitability": 10
+    },
+    "context": {
+      "resource_uid": "arn:aws:iam::010603499647:user/cloud-security-admin",
+      "asset_criticality": "CRITICAL",
+      "exposure": "UNKNOWN",
+      "business_impact": "CRITICAL",
+      "exploitability": "HIGH",
+      "compensating_controls": [],
+      "remediation_risk": "HIGH",
+      "exception_status": "NONE",
+      "evidence": [
+        {
+          "source": "evidence/iam-administrator-access-path.md",
+          "fact": "User is a member of cloud-security-admins1, which has AdministratorAccess with Action:* and Resource:*."
+        },
+        {
+          "source": "evidence/iam-administrator-access-path.md",
+          "fact": "The active IAM access key is used by the current CloudShell/API workflow."
+        },
+        {
+          "source": "evidence/iam-administrator-access-path.md",
+          "fact": "Removing administrative access without validating a replacement could cause administrative lockout."
+        },
+        {
+          "source": "prowler",
+          "fact": "iam_user_with_temporary_credentials failed with severity high"
+        }
+      ]
+    }
+  },
+  {
+    "finding_id": "iam_user_with_temporary_credentials",
+    "resource_uid": "arn:aws:iam::010603499647:user/cloud-security-admin",
+    "severity": "high",
+    "category": "identity-access",
+    "owner": "IAM",
+    "disposition": "MANUAL_REMEDIATE",
+    "status": "FAIL",
+    "lifecycle_status": "OPEN",
+    "base_score": 30,
+    "context_score": 30,
+    "risk_score": 60,
+    "decision": "BLOCK",
+    "rationale": "Effective risk score 60 reaches the block threshold of 40.",
+    "context_contributions": {
+      "asset_criticality": 10,
+      "exposure": 0,
+      "business_impact": 10,
+      "exploitability": 10
+    },
+    "context": {
+      "resource_uid": "arn:aws:iam::010603499647:user/cloud-security-admin",
+      "asset_criticality": "CRITICAL",
+      "exposure": "UNKNOWN",
+      "business_impact": "CRITICAL",
+      "exploitability": "HIGH",
+      "compensating_controls": [],
+      "remediation_risk": "HIGH",
+      "exception_status": "NONE",
+      "evidence": [
+        {
+          "source": "evidence/iam-administrator-access-path.md",
+          "fact": "User is a member of cloud-security-admins1, which has AdministratorAccess with Action:* and Resource:*."
+        },
+        {
+          "source": "evidence/iam-administrator-access-path.md",
+          "fact": "The active IAM access key is used by the current CloudShell/API workflow."
+        },
+        {
+          "source": "evidence/iam-administrator-access-path.md",
+          "fact": "Removing administrative access without validating a replacement could cause administrative lockout."
+        },
+        {
+          "source": "prowler",
+          "fact": "iam_user_with_temporary_credentials failed with severity high"
+        }
+      ]
+    }
+  }
+]

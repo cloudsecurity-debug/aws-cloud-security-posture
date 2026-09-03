@@ -51,22 +51,27 @@ jobs:
           echo "Normalizing: $PROWLER_CSV"
           python3 scripts/normalize_findings.py "$PROWLER_CSV"
 
+      - name: Collect security context
+        run: |
+          python3 scripts/collect_security_context.py
+
       - name: Evaluate CSPM risk
         run: |
           python3 scripts/risk_engine.py
 
-      - name: Upload Prowler assessment artifacts
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: prowler-iam-assessment
-          path: output/
-          if-no-files-found: error
+      - name: Enforce CSPM security gate
+        run: |
+          python3 scripts/security_gate.py
 
-      - name: Upload security gate report
+      - name: Upload CSPM evidence package
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: cspm-risk-decision-report
-          path: reports/risk-decision-report.md
+          name: cspm-security-evidence
+          path: |
+            output/
+            reports/security-context.json
+            reports/risk-decisions.json
+            reports/risk-decision-report.md
+            reports/security-gate-report.md
           if-no-files-found: error

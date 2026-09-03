@@ -1,7 +1,7 @@
 {
-  "version": 1,
+  "version": 2,
   "name": "aws-cloud-security-posture-risk-policy",
-  "description": "Risk decision contract for normalized CSPM findings.",
+  "description": "Explainable, context-aware risk decision contract for normalized CSPM findings.",
   "decision_model": {
     "required_fields": [
       "finding_id",
@@ -33,6 +33,40 @@
       "default_action": "REPORT_ONLY"
     }
   },
+  "context_scoring": {
+    "asset_criticality": {
+      "CRITICAL": 10,
+      "HIGH": 5,
+      "MEDIUM": 0,
+      "LOW": 0,
+      "UNKNOWN": 0
+    },
+    "exposure": {
+      "INTERNET": 15,
+      "INTERNAL": 5,
+      "PRIVATE": 0,
+      "UNKNOWN": 0
+    },
+    "business_impact": {
+      "CRITICAL": 10,
+      "HIGH": 5,
+      "MEDIUM": 0,
+      "LOW": 0,
+      "UNKNOWN": 0
+    },
+    "exploitability": {
+      "HIGH": 10,
+      "MEDIUM": 5,
+      "LOW": 0,
+      "UNKNOWN": 0
+    },
+    "block_threshold": 40
+  },
+  "context_semantics": {
+    "remediation_risk": "operational-risk-only; do-not-add-to-threat-score",
+    "unknown_values": "contribute-zero-and-must-remain-explicit",
+    "context_can_escalate": true
+  },
   "dispositions": {
     "AUTO_REMEDIATE": "remediation-approved",
     "MANUAL_REMEDIATE": "human-approval-required",
@@ -46,20 +80,11 @@
     "VALIDATING": "remediation-awaiting-verification",
     "CLOSED": "verified-or-finalized"
   },
-  "risk_dimensions": {
-    "severity": "required",
-    "asset_criticality": "explicit-or-unknown",
-    "exposure": "explicit-or-unknown",
-    "business_impact": "explicit-or-unknown",
-    "exploitability": "explicit-or-unknown",
-    "remediation_status": "required",
-    "exception_status": "explicit-or-none"
-  },
   "decision_rules": {
-    "BLOCK": "finding violates the enforced security policy",
+    "EXCEPTION": "explicit governance acceptance takes precedence over risk score",
+    "REPORT_ONLY": "explicit informational disposition remains non-blocking",
+    "BLOCK": "finding violates enforced security policy or contextual risk reaches block threshold",
     "INVESTIGATE": "available evidence is insufficient for automatic remediation or acceptance",
-    "EXCEPTION": "risk is explicitly accepted under governance controls",
-    "REPORT_ONLY": "finding is retained for visibility without deployment-blocking impact",
     "PASS": "no actionable failed finding remains after evaluation"
   },
   "fail_closed": {
@@ -68,5 +93,14 @@
     "missing_required_field": "ERROR",
     "unrecognized_disposition": "ERROR",
     "unrecognized_status": "ERROR"
+  },
+  "risk_dimensions": {
+    "severity": "required",
+    "asset_criticality": "explicit-or-unknown",
+    "exposure": "explicit-or-unknown",
+    "business_impact": "explicit-or-unknown",
+    "exploitability": "explicit-or-unknown",
+    "remediation_risk": "operational-risk-only",
+    "exception_status": "explicit-or-none"
   }
 }

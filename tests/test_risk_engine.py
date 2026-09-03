@@ -1,10 +1,9 @@
 import sys
 from pathlib import Path
+
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-import csv
+
 import json
-import tempfile
-from pathlib import Path
 
 from scripts.risk_engine import evaluate
 
@@ -30,10 +29,32 @@ def finding(**overrides):
     return base
 
 
+def context(**overrides):
+    base = {
+        "resource_uid": "arn:aws:iam::123456789012:user/test-user",
+        "asset_criticality": "UNKNOWN",
+        "exposure": "UNKNOWN",
+        "business_impact": "UNKNOWN",
+        "exploitability": "UNKNOWN",
+        "compensating_controls": [],
+        "remediation_risk": "UNKNOWN",
+        "exception_status": "NONE",
+        "evidence": [],
+    }
+    base.update(overrides)
+    return base
+
+
 def test_high_manual_remediation_blocks():
-    result = evaluate(finding(), load_policy())
+    result = evaluate(
+        finding(),
+        context(),
+        load_policy(),
+    )
 
     assert result["decision"] == "BLOCK"
+    assert result["base_score"] == 30
+    assert result["context_score"] == 0
     assert result["risk_score"] == 30
 
 
@@ -43,49 +64,95 @@ def test_critical_finding_blocks():
             severity="critical",
             disposition="MANUAL_REMEDIATE",
         ),
+        context(),
         load_policy(),
     )
 
     assert result["decision"] == "BLOCK"
+    assert result["base_score"] == 40
+    assert result["context_score"] == 0
     assert result["risk_score"] == 40
 
 
-def test_exception_does_not_block():
+def test_context_escalates_medium_finding():
     result = evaluate(
         finding(
-            severity="high",
-            disposition="EXCEPTION",
+            severity="medium",
+            disposition="MANUAL_REMEDIATE",
+        ),
+        context(
+            asset_criticality="CRITICAL",
+            exposure="INTERNET",
+            business_impact="CRITICAL",
+            exploitability="HIGH",
         ),
         load_policy(),
     )
 
-    assert result["decision"] == "EXCEPTION"
+    assert result["base_score"] == 20
+    assert result["context_score"] == 45
+    assert result["risk_score"] == 65
+    assert result["decision"] == "BLOCK"
+
+    assert result["context_contributions"] == {
+        "asset_criticality": 10,
+        "exposure": 15,
+        "business_impact": 10,
+        "exploitability": 10,
+    }
 
 
-def test_investigation_is_not_block():
+def test_unknown_context_contributes_zero():
     result = evaluate(
         finding(
             severity="medium",
             disposition="INVESTIGATE",
         ),
+        context(),
         load_policy(),
     )
 
-    assert result["decision"] == "INVESTIGATE"
+    assert result["context_score"] == 0
     assert result["risk_score"] == 20
+    assert result["decision"] == "INVESTIGATE"
 
 
-def test_report_only_is_not_block():
+def test_exception_takes_precedence_over_context():
+    result = evaluate(
+        finding(
+            severity="high",
+            disposition="EXCEPTION",
+        ),
+        context(
+            asset_criticality="CRITICAL",
+            exposure="INTERNET",
+            business_impact="CRITICAL",
+            exploitability="HIGH",
+        ),
+        load_policy(),
+    )
+
+    assert result["decision"] == "EXCEPTION"
+    assert result["risk_score"] == 75
+
+
+def test_report_only_takes_precedence_over_context():
     result = evaluate(
         finding(
             severity="low",
             disposition="REPORT_ONLY",
         ),
+        context(
+            asset_criticality="CRITICAL",
+            exposure="INTERNET",
+            business_impact="CRITICAL",
+            exploitability="HIGH",
+        ),
         load_policy(),
     )
 
     assert result["decision"] == "REPORT_ONLY"
-    assert result["risk_score"] == 10
+    assert result["risk_score"] == 55
 
 
 def test_missing_required_field_fails_closed():
@@ -93,7 +160,7 @@ def test_missing_required_field_fails_closed():
     del item["owner"]
 
     try:
-        evaluate(item, load_policy())
+        evaluate(item, context(), load_policy())
     except ValueError as exc:
         assert "Missing required fields: owner" in str(exc)
     else:
@@ -104,6 +171,7 @@ def test_unknown_severity_fails_closed():
     try:
         evaluate(
             finding(severity="extreme"),
+            context(),
             load_policy(),
         )
     except ValueError as exc:
@@ -112,31 +180,27 @@ def test_unknown_severity_fails_closed():
         raise AssertionError("Unknown severity was accepted")
 
 
-def test_unknown_status_fails_closed():
+def test_unknown_lifecycle_status_fails_closed():
     try:
         evaluate(
             finding(lifecycle_status="UNKNOWN"),
+            context(),
             load_policy(),
         )
     except ValueError as exc:
-        assert "Unknown status" in str(exc)
+        assert "Unknown lifecycle status" in str(exc)
     else:
-        raise AssertionError("Unknown status was accepted")
+        raise AssertionError("Unknown lifecycle status was accepted")
 
 
-if __name__ == "__main__":
-    tests = [
-        test_high_manual_remediation_blocks,
-        test_critical_finding_blocks,
-        test_exception_does_not_block,
-        test_investigation_is_not_block,
-        test_report_only_is_not_block,
-        test_missing_required_field_fails_closed,
-        test_unknown_severity_fails_closed,
-        test_unknown_status_fails_closed,
-    ]
-
-    for test in tests:
-        test()
-
-    print("RISK ENGINE TESTS: PASS")
+def test_unknown_context_value_fails_closed():
+    try:
+        evaluate(
+            finding(),
+            context(asset_criticality="EXTREME"),
+            load_policy(),
+        )
+    except ValueError as exc:
+        assert "Unknown asset_criticality" in str(exc)
+    else:
+        raise AssertionError("Unknown context value was accepted")

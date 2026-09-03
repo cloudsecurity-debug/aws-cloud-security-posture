@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Security Context Collection",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": [
+      "resource_uid",
+      "asset_criticality",
+      "exposure",
+      "business_impact",
+      "exploitability",
+      "compensating_controls",
+      "remediation_risk",
+      "exception_status",
+      "evidence"
+    ],
+    "properties": {
+      "resource_uid": {
+        "type": "string",
+        "minLength": 1
+      },
+      "asset_criticality": {
+        "type": "string",
+        "enum": ["CRITICAL", "HIGH", "MEDIUM", "LOW", "UNKNOWN"]
+      },
+      "exposure": {
+        "type": "string",
+        "enum": ["INTERNET", "INTERNAL", "PRIVATE", "UNKNOWN"]
+      },
+      "business_impact": {
+        "type": "string",
+        "enum": ["CRITICAL", "HIGH", "MEDIUM", "LOW", "UNKNOWN"]
+      },
+      "exploitability": {
+        "type": "string",
+        "enum": ["HIGH", "MEDIUM", "LOW", "UNKNOWN"]
+      },
+      "compensating_controls": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "remediation_risk": {
+        "type": "string",
+        "enum": ["HIGH", "MEDIUM", "LOW", "UNKNOWN"]
+      },
+      "exception_status": {
+        "type": "string",
+        "enum": ["NONE", "ACTIVE", "EXPIRED", "UNKNOWN"]
+      },
+      "evidence": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": ["source", "fact"],
+          "properties": {
+            "source": {
+              "type": "string",
+              "minLength": 1
+            },
+            "fact": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "additionalProperties": false
+        }
+      }
+    },
+    "additionalProperties": false
+  }
+}

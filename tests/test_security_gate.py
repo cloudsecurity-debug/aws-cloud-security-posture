@@ -8,78 +8,64 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 GATE = PROJECT_ROOT / "scripts" / "security_gate.py"
 
 
-def write_policy(path):
-    policy = {
-        "version": 1,
-        "default_action": "BLOCK",
-        "rules": {
-            "critical": "BLOCK",
-            "high": "BLOCK",
-            "medium": "INVESTIGATE",
-            "low": "REPORT_ONLY",
-        },
-        "exceptions": [
-            {
-                "finding_id": "iam_test_exception",
-                "resource_name": "project1-role",
-                "action": "EXCEPTION",
-                "reason": "Approved Project 1 boundary",
-            }
-        ],
+def write_decisions(path, decisions):
+    path.write_text(
+        json.dumps(decisions, indent=2),
+        encoding="utf-8",
+    )
+
+
+def base_decision(**overrides):
+    decision = {
+        "finding_id": "iam_test_finding",
+        "resource_uid": "test-resource",
+        "severity": "high",
+        "category": "identity-access",
+        "owner": "IAM",
+        "disposition": "MANUAL_REMEDIATE",
+        "status": "FAIL",
+        "lifecycle_status": "OPEN",
+        "base_score": 30,
+        "context_score": 0,
+        "risk_score": 30,
+        "decision": "BLOCK",
+        "rationale": "Test risk decision",
+        "context_contributions": {},
+        "context": {},
     }
-    path.write_text(json.dumps(policy), encoding="utf-8")
+    decision.update(overrides)
+    return decision
 
 
-def write_csv(path, rows):
-    headers = [
-        "STATUS",
-        "CHECK_ID",
-        "SEVERITY",
-        "RESOURCE_NAME",
-    ]
-
-    lines = [";".join(headers)]
-
-    for row in rows:
-        lines.append(";".join(row))
-
-    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
-
-
-def run_gate(csv_path, policy_path, report_path):
+def run_gate(decisions_path, report_path):
     command = [
         sys.executable,
         str(GATE),
-        str(csv_path),
-        str(policy_path),
+        str(decisions_path),
         str(report_path),
     ]
 
-    result = subprocess.run(
+    return subprocess.run(
         command,
         cwd=PROJECT_ROOT,
         capture_output=True,
         text=True,
     )
 
-    return result
 
-
-def test_high_finding_blocks():
+def test_block_decision_fails_gate():
     with tempfile.TemporaryDirectory() as tmp:
         tmp = Path(tmp)
 
-        write_policy(tmp / "policy.json")
+        decisions_path = tmp / "risk-decisions.json"
+        report_path = tmp / "report.md"
 
-        rows = [
-            ("FAIL", "iam_test_high", "high", "test-admin"),
-        ]
+        write_decisions(
+            decisions_path,
+            [base_decision()],
+        )
 
-        csv_path = tmp / "findings.csv"
-        write_csv(csv_path, rows)
-
-        # Use the repository policy for this test.
-        result = run_gate(csv_path, tmp / "policy.json", tmp / "report.md")
+        result = run_gate(decisions_path, report_path)
 
         assert result.returncode == 1
         assert "RESULT: BLOCK" in result.stdout
@@ -89,47 +75,121 @@ def test_exception_does_not_block():
     with tempfile.TemporaryDirectory() as tmp:
         tmp = Path(tmp)
 
-        write_policy(tmp / "policy.json")
+        decisions_path = tmp / "risk-decisions.json"
+        report_path = tmp / "report.md"
 
-        rows = [
-            (
-                "FAIL",
-                "iam_test_exception",
-                "high",
-                "project1-role",
-            ),
-        ]
+        write_decisions(
+            decisions_path,
+            [
+                base_decision(
+                    decision="EXCEPTION",
+                    disposition="EXCEPTION",
+                )
+            ],
+        )
 
-        csv_path = tmp / "findings.csv"
-        write_csv(csv_path, rows)
-
-        result = run_gate(csv_path, tmp / "policy.json", tmp / "report.md")
+        result = run_gate(decisions_path, report_path)
 
         assert result.returncode == 0
         assert "RESULT: PASS" in result.stdout
 
 
-def test_pass_finding_is_ignored():
+def test_report_only_does_not_block():
     with tempfile.TemporaryDirectory() as tmp:
         tmp = Path(tmp)
 
-        write_policy(tmp / "policy.json")
+        decisions_path = tmp / "risk-decisions.json"
+        report_path = tmp / "report.md"
 
-        rows = [
-            ("PASS", "iam_test_high", "high", "test-admin"),
-        ]
+        write_decisions(
+            decisions_path,
+            [
+                base_decision(
+                    severity="low",
+                    disposition="REPORT_ONLY",
+                    decision="REPORT_ONLY",
+                )
+            ],
+        )
 
-        csv_path = tmp / "findings.csv"
-        write_csv(csv_path, rows)
-
-        result = run_gate(csv_path, tmp / "policy.json", tmp / "report.md")
+        result = run_gate(decisions_path, report_path)
 
         assert result.returncode == 0
         assert "RESULT: PASS" in result.stdout
 
 
+def test_investigate_does_not_block():
+    with tempfile.TemporaryDirectory() as tmp:
+        tmp = Path(tmp)
+
+        decisions_path = tmp / "risk-decisions.json"
+        report_path = tmp / "report.md"
+
+        write_decisions(
+            decisions_path,
+            [
+                base_decision(
+                    severity="medium",
+                    disposition="INVESTIGATE",
+                    decision="INVESTIGATE",
+                )
+            ],
+        )
+
+        result = run_gate(decisions_path, report_path)
+
+        assert result.returncode == 0
+        assert "RESULT: PASS" in result.stdout
+
+
+def test_unknown_decision_fails_closed():
+    with tempfile.TemporaryDirectory() as tmp:
+        tmp = Path(tmp)
+
+        decisions_path = tmp / "risk-decisions.json"
+        report_path = tmp / "report.md"
+
+        write_decisions(
+            decisions_path,
+            [
+                base_decision(
+                    decision="UNKNOWN_DECISION",
+                )
+            ],
+        )
+
+        result = run_gate(decisions_path, report_path)
+
+        assert result.returncode == 2
+        assert "invalid risk decision contract" in result.stdout
+
+
+def test_missing_required_field_fails_closed():
+    with tempfile.TemporaryDirectory() as tmp:
+        tmp = Path(tmp)
+
+        decisions_path = tmp / "risk-decisions.json"
+        report_path = tmp / "report.md"
+
+        decision = base_decision()
+        del decision["owner"]
+
+        write_decisions(
+            decisions_path,
+            [decision],
+        )
+
+        result = run_gate(decisions_path, report_path)
+
+        assert result.returncode == 2
+        assert "Missing required fields: owner" in result.stdout
+
+
 if __name__ == "__main__":
-    test_high_finding_blocks()
+    test_block_decision_fails_gate()
     test_exception_does_not_block()
-    test_pass_finding_is_ignored()
+    test_report_only_does_not_block()
+    test_investigate_does_not_block()
+    test_unknown_decision_fails_closed()
+    test_missing_required_field_fails_closed()
     print("SECURITY GATE TESTS: PASS")
