@@ -11,6 +11,18 @@
     "iam_user_access_not_stale_to_bedrock|arn:aws:iam::010603499647:user/cloud-security-admin",
     "iam_user_hardware_mfa_enabled|arn:aws:iam::010603499647:user/cloud-security-admin",
     "iam_user_mfa_enabled_console_access|arn:aws:iam::010603499647:user/cloud-security-admin",
-    "iam_user_with_temporary_credentials|arn:aws:iam::010603499647:user/cloud-security-admin"
+    "iam_user_with_temporary_credentials|arn:aws:iam::010603499647:user/cloud-security-admin",
+    "s3_bucket_kms_encryption|arn:aws:s3:::cloud-security-config-2957259b1ce0d8cc3a848028db",
+    "s3_bucket_kms_encryption|arn:aws:s3:::cloud-security-config-4b911608db3353300b077593d6",
+    "s3_bucket_kms_encryption|arn:aws:s3:::cloud-security-test-35659a84c3b743f817513cecd8",
+    "s3_bucket_kms_encryption|arn:aws:s3:::cloud-security-test-bd9bb95ceabfda595f9fd8434c",
+    "s3_bucket_object_versioning|arn:aws:s3:::cloud-security-config-2957259b1ce0d8cc3a848028db",
+    "s3_bucket_object_versioning|arn:aws:s3:::cloud-security-config-4b911608db3353300b077593d6",
+    "s3_bucket_object_versioning|arn:aws:s3:::cloud-security-test-35659a84c3b743f817513cecd8",
+    "s3_bucket_object_versioning|arn:aws:s3:::cloud-security-test-bd9bb95ceabfda595f9fd8434c",
+    "s3_bucket_secure_transport_policy|arn:aws:s3:::cloud-security-config-2957259b1ce0d8cc3a848028db",
+    "s3_bucket_secure_transport_policy|arn:aws:s3:::cloud-security-config-4b911608db3353300b077593d6",
+    "s3_bucket_secure_transport_policy|arn:aws:s3:::cloud-security-test-35659a84c3b743f817513cecd8",
+    "s3_bucket_secure_transport_policy|arn:aws:s3:::cloud-security-test-bd9bb95ceabfda595f9fd8434c"
   ]
 }
